@@ -1,0 +1,16 @@
+{% extends 'base/master.html' %}
+{% block pagename %}User{% endblock %}
+{% block content %}
+    <form action="{% url 'user_form' %}">
+        <label>User: <input type="text" name="username" value="{{ username }}"></label>
+        <input type="submit" value="Go">
+    </form>
+    <p>Entries for this user: {{ entries_count }}</p>
+    {% if entries_count > 0 %}
+        <ul>
+        {% for entry_type, type_sum in list_sum.items %}
+            <li>{{ entry_type }}: {{ type_sum }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
