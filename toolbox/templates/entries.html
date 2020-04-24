@@ -6,6 +6,7 @@
         <input type="text" class="form-control mr-sm-2" id="form-filter-user" name="user" value="{{ filter_user }}">
         <label for="form-filter-action" class="mr-sm-2">Action:</label>
         <select name="action" class="form-control mr-sm-2" id="form-filter-action">
+            <option value="">-------------</option>
             {% for entry_value, entry_name in mod_actions.items %}
                 <option value="{{ entry_value }}"{% if filter_action == entry_value %} selected{% endif %}>{{ entry_value }}</option>
             {% endfor %}
