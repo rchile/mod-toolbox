@@ -1,4 +1,5 @@
 {% extends 'base/master.html' %}
+{% load toolbox %}
 {% block pagename %}Entries{% endblock %}
 {% block content %}
     <form action="{% url 'entries' %}" class="form-inline">
@@ -36,7 +37,7 @@
                                 <br><a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">link</a>
                             {% endif %}
                         </td>
-                        <td>{{ entry.created_utc }}</td>
+                        <td>{{ entry.created_utc | format_date }} ({{ entry.created_utc | human_date }})</td>
                         <td>
                             <span>mod: {{ entry.mod }}</span><br>
                             {% if entry.target_author %}
