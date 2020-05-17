@@ -1,7 +1,7 @@
 from django.urls import path
 
 import toolbox.views_session
-from toolbox import views
+from toolbox import views, views_api
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -13,4 +13,6 @@ urlpatterns = [
     path('session/login', toolbox.views_session.login, name='login'),
     path('session/logout', toolbox.views_session.logout, name='logout'),
     path('session/return', toolbox.views_session.login_return, name='login_return'),
+
+    path('api/modlog/', views_api.modlog)
 ]

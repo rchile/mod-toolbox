@@ -1,10 +1,12 @@
 import logging
 import random
+import re
 from datetime import datetime
 
 from django.conf import settings
 import praw
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from prawcore import OAuthException, InsufficientScope
@@ -14,10 +16,37 @@ _reddit_ins = None
 _reddit_ins_ref = None
 logger = logging.getLogger('rchilemt')
 
+pat_modlog_entry_id = re.compile(r'^ModAction_[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')
+
 
 def random_str(length=15):
     x = 'abcdefghihklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
     return ''.join([x[random.randint(0, len(x)-1)] for _ in range(length)])
+
+
+def message_response(message=None, data=None, status=200):
+    if data is None:
+        data = {}
+
+    if not isinstance(data, dict):
+        raise RuntimeError('data parameter is not a dict or None')
+
+    return JsonResponse({'message': message, **data}, status=status)
+
+
+def filter_entry(entry):
+    """
+    Filters data out from a hidden entry
+    :param entry: The entry to remove it's public data
+    :return: The filtered entry
+    """
+
+    if entry.get('hidden', None):
+        clear_attrs = 'target_author,target_permalink,target_body,target_title,' \
+                      'target_fullname,description,details'.split(',')
+        entry = {**dict(entry), **zip(clear_attrs, [None] * len(clear_attrs))}
+
+    return entry
 
 
 def reddit_instance(refresh=None):
