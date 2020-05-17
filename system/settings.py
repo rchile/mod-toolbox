@@ -13,12 +13,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'toolbox'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -109,6 +111,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 
+# CORS headers
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ORIGIN_WHITELIST = ['https://rchile.xyz']
+
 # Reddit settings
 REDDIT_APP_ID = ''
 REDDIT_APP_SECRET = ''
@@ -124,3 +130,9 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+if DEBUG:
+    CORS_ORIGIN_WHITELIST += [
+        'http://127.0.0.1:5000',
+        'http://localhost:5000'
+    ]
