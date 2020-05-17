@@ -3,7 +3,8 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from prawcore import OAuthException
 
-from system.common import reddit_instance, random_str, logger
+from system.common import random_str, logger
+from system.api import reddit_instance
 
 
 def login(request):

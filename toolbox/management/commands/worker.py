@@ -1,15 +1,11 @@
 import time
 
 import pymongo
-from django.conf import settings
 from django.core.management import BaseCommand
 from praw.models import ModAction
 
-from system.common import reddit_instance
+from system.api import api
 from system.database import Database
-
-reddit = reddit_instance(settings.REDDIT_APP_REFRESH)
-api = reddit.subreddit(settings.REDDIT_DEFAULT_SUB)
 
 
 def serialize(item: ModAction):

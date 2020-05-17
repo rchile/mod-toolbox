@@ -4,7 +4,6 @@ import re
 from datetime import datetime
 
 from django.conf import settings
-import praw
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -12,8 +11,8 @@ from django.template.response import TemplateResponse
 from prawcore import OAuthException, InsufficientScope
 from pymongo import MongoClient
 
-_reddit_ins = None
-_reddit_ins_ref = None
+from system.api import reddit_instance
+
 logger = logging.getLogger('rchilemt')
 
 pat_modlog_entry_id = re.compile(r'^ModAction_[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')
@@ -49,28 +48,6 @@ def filter_entry(entry):
     return entry
 
 
-def reddit_instance(refresh=None):
-    params = {
-        'client_id': settings.REDDIT_APP_ID,
-        'client_secret': settings.REDDIT_APP_SECRET,
-        'user_agent': settings.REDDIT_APP_UA
-    }
-
-    if refresh:
-        global _reddit_ins_ref
-        if _reddit_ins_ref is None:
-            params['refresh_token'] = refresh
-            _reddit_ins_ref = praw.Reddit(**params)
-        return _reddit_ins_ref
-    else:
-        global _reddit_ins
-        if _reddit_ins is None:
-            params['redirect_uri'] = settings.REDDIT_APP_REDIRECT
-            _reddit_ins = praw.Reddit(**params)
-
-        return _reddit_ins
-
-
 def get_database():
     client = MongoClient(settings.MODLOG_MONGODB_URI)
     return client.get_database()
@@ -89,7 +66,7 @@ def require_auth(f):
         # Check session only if last check was done 5 minutes ago or more
         last_check = request.session.get('last_session_check', 0)
         now_timestamp = datetime.now().timestamp()
-        if now_timestamp - last_check > 300:
+        if (now_timestamp - last_check) > 300:
             try:
                 reddit.auth.scopes()
             except (OAuthException, InsufficientScope):
@@ -98,6 +75,7 @@ def require_auth(f):
                 return redirect('login')
 
             user = reddit.user.me()
+            request.session['username'] = user.name
             subreddit = request.session.get('auth_sub', settings.REDDIT_DEFAULT_SUB)
             if subreddit not in user.moderated():
                 request.session['logout_message'] = 'You are not a moderator of this subreddit!'
@@ -106,8 +84,11 @@ def require_auth(f):
             # Update last session check timestamp
             request.session['last_session_check'] = datetime.now().timestamp()
 
-        user = reddit.user.me()
-        request.reddit = reddit
+        user = request.session.get('username', None)
+        if not user:
+            user = reddit.user.me()
+            request.session['username'] = user.name
+
         view_response = f(request, *args, **kwargs)
 
         if isinstance(view_response, TemplateResponse):
