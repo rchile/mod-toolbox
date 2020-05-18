@@ -1,5 +1,6 @@
 import re
 import math
+from datetime import datetime
 from urllib.parse import urlencode
 
 import pymongo
@@ -18,8 +19,49 @@ pat_reddit_modaction = re.compile(r'^[a-z]{5,30}$')
 
 
 def index(request):
-    return render(request, 'index_.html', context={
+    return render(request, 'login.html', context={
         'messages': messages.get_messages(request)
+    })
+
+
+@require_auth
+def home(request):
+    current_seg = (datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()
+
+    db = Database.get_instance()
+    total_count = db.entries.find().count()
+    last_hour = db.entries.find({'created_utc': {'$gte': current_seg - 3600}}).count()
+    last_24h = db.entries.find({'created_utc': {'$gte': current_seg - (3600*24)}})
+
+    mod_count = {}
+    action_count = {}
+    target_count = {}
+    for entry in last_24h:
+        mod = entry['mod']
+        action = entry['action']
+        target = entry['target_author']
+
+        if action not in action_count:
+            action_count[action] = 0
+        action_count[action] += 1
+
+        if target and target != '[deleted]':
+            if target not in target_count:
+                target_count[target] = 0
+            target_count[target] += 1
+
+        if mod != 'AutoModerator':
+            if mod not in mod_count:
+                mod_count[mod] = 0
+            mod_count[mod] += 1
+
+    return TemplateResponse(request, 'home.html', {
+        'total': total_count,
+        'last_hour': last_hour,
+        'last_24h': last_24h.count(),
+        'mod_count': mod_count,
+        'action_count': action_count,
+        'target_count': target_count
     })
 
 
@@ -76,11 +118,6 @@ def entries(request, page=1):
         'next_page': next_page,
         'url_filters': url_filters
     })
-
-
-@require_auth
-def home(request):
-    return TemplateResponse(request, 'home.html')
 
 
 @require_auth

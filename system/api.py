@@ -6,7 +6,8 @@ def reddit_instance(refresh=None):
     params = {
         'client_id': settings.REDDIT_APP_ID,
         'client_secret': settings.REDDIT_APP_SECRET,
-        'user_agent': settings.REDDIT_APP_UA
+        'user_agent': settings.REDDIT_APP_UA,
+        'check_for_updates': False
     }
 
     if refresh:

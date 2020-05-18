@@ -1,5 +1,14 @@
 {% extends 'base/master.html' %}
 {% block pagename %}Home{% endblock %}
 {% block content %}
-    wena
+    <h4>Welcome to The Toolbox!</h4>
+    <p>Site under construction UwU</p>
+    <p>Some raw stats below</p>
+    <hr>
+    <p>Total entries: {{ total }}</p>
+    <p>Actions last hour: {{ last_hour }}</p>
+    <p>Actions last 24 hours: {{ last_24h }}</p>
+    <p>Actions count by mod last 24 hours: {{ mod_count }}</p>
+    <p>Actions count types last 24 hours: {{ action_count }}</p>
+    <p>Action targets last 24 hours: {{ target_count }}</p>
 {% endblock %}

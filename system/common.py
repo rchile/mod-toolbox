@@ -57,7 +57,7 @@ def require_auth(f):
     def wrapper(request, *args, **kwargs):
         auth_code = request.session.get('auth_code', '')
         if not auth_code:
-            messages.add_message(request, messages.ERROR, 'Sesión no iniciada o ha expirado.')
+            messages.add_message(request, messages.ERROR, 'Not logged or session expired.')
             return redirect('index')
 
         # Instantiate reddit session interface
@@ -71,7 +71,7 @@ def require_auth(f):
                 reddit.auth.scopes()
             except (OAuthException, InsufficientScope):
                 del request.session['auth_code']
-                messages.add_message(request, messages.ERROR, 'Tu sesión ha expirado.')
+                messages.add_message(request, messages.ERROR, 'Your session expired.')
                 return redirect('login')
 
             user = reddit.user.me()

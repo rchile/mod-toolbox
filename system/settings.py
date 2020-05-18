@@ -1,5 +1,5 @@
 import os
-
+from django.contrib.messages import constants as messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = ''
@@ -77,7 +77,6 @@ LOGGING = {
     },
 }
 
-
 WSGI_APPLICATION = 'system.wsgi.application'
 
 DATABASES = {
@@ -110,6 +109,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
+
+# Message settings
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-primary',
+    messages.INFO: 'alert-light',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
 
 # CORS headers
 CORS_URLS_REGEX = r'^/api/.*$'
