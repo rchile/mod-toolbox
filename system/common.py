@@ -100,3 +100,7 @@ def require_auth(f):
             return view_response
 
     return wrapper
+
+
+def sort_numeric_dict(the_dict, reverse=True):
+    return {k: v for k, v in sorted(the_dict.items(), key=lambda item: item[1], reverse=reverse)}

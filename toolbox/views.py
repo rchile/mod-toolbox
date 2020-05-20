@@ -1,5 +1,6 @@
 import re
 import math
+from collections import OrderedDict
 from datetime import datetime
 from urllib.parse import urlencode
 
@@ -11,7 +12,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from system import constants
-from system.common import require_auth
+from system.common import require_auth, sort_numeric_dict
 from system.database import Database
 
 pat_reddit_user = re.compile(r'^[a-zA-Z0-9_\-]{5,30}$')
@@ -36,6 +37,10 @@ def home(request):
     mod_count = {}
     action_count = {}
     target_count = {}
+    comments_count = 0
+    posts_count = 0
+    automod_count = 0
+
     for entry in last_24h:
         mod = entry['mod']
         action = entry['action']
@@ -50,10 +55,22 @@ def home(request):
                 target_count[target] = 0
             target_count[target] += 1
 
-        if mod != 'AutoModerator':
+        if mod == 'AutoModerator':
+            automod_count += 1
+        else:
             if mod not in mod_count:
                 mod_count[mod] = 0
             mod_count[mod] += 1
+
+            if entry['action'] in ['removecomment', 'spamcomment']:
+                comments_count += 1
+            if entry['action'] in ['removelink', 'spamlink']:
+                posts_count += 1
+
+    approval_count = action_count.get('approvelink', 0) + action_count.get('approvecomment', 0)
+    mod_count = sort_numeric_dict(mod_count)
+    action_count = sort_numeric_dict(action_count)
+    target_count = OrderedDict(list(sort_numeric_dict(target_count).items())[:10])
 
     return TemplateResponse(request, 'home.html', {
         'total': total_count,
@@ -61,7 +78,12 @@ def home(request):
         'last_24h': last_24h.count(),
         'mod_count': mod_count,
         'action_count': action_count,
-        'target_count': target_count
+        'target_count': target_count,
+        'posts_count': posts_count,
+        'approval_count': approval_count,
+        'ban_count': action_count.get('banuser', 0),
+        'comment_count': comments_count,
+        'automod_count': automod_count
     })
 
 

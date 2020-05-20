@@ -1,14 +1,103 @@
 {% extends 'base/master.html' %}
 {% block pagename %}Home{% endblock %}
+{% block head %}
+    <style>
+    .card-body { padding: 12px; font-size: 14px }
+    .card a { color: #000 }
+    .card a:hover { text-decoration: none }
+    .text-light a { color: #fff }
+    </style>
+{% endblock %}
 {% block content %}
-    <h4>Welcome to The Toolbox!</h4>
-    <p>Site under construction UwU</p>
-    <p>Some raw stats below</p>
-    <hr>
-    <p>Total entries: {{ total }}</p>
-    <p>Actions last hour: {{ last_hour }}</p>
-    <p>Actions last 24 hours: {{ last_24h }}</p>
-    <p>Actions count by mod last 24 hours: {{ mod_count }}</p>
-    <p>Actions count types last 24 hours: {{ action_count }}</p>
-    <p>Action targets last 24 hours: {{ target_count }}</p>
+    <h3>Dashboard <small class="text-muted">Last 24 hours stats</small></h3>
+
+    <div class="card-deck mt-3">
+        <div class="card bg-primary text-light">
+            <a href="{% url 'entries' %}">
+                <div class="card-body">
+                    <h4>{{ last_24h }}</h4>
+                    Actions last 24H
+                </div>
+            </a>
+        </div>
+        <div class="card bg-info text-light">
+            <a href="{% url 'entries' %}?mod=AutoModerator">
+                <div class="card-body">
+                    <h4>{{ automod_count }}</h4>
+                    Automatic actions
+                </div>
+            </a>
+        </div>
+        <div class="card bg-warning">
+            <a href="{% url 'entries' %}?action=removecomment">
+                <div class="card-body">
+                    <h4>{{ comment_count }}</h4>
+                    Removed comments
+                </div>
+            </a>
+        </div>
+        <div class="card bg-warning">
+            <a href="{% url 'entries' %}?action=removelink">
+                <div class="card-body">
+                    <h4>{{ posts_count }}</h4>
+                    Removed posts
+                </div>
+            </a>
+        </div>
+        <div class="card bg-success text-light">
+            <div class="card-body">
+                <h4>{{ approval_count }}</h4>
+                Approved content
+            </div>
+        </div>
+        <div class="card bg-danger text-light">
+            <div class="card-body">
+                <h4>{{ ban_count }}</h4>
+                Banned users
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+    <div class="col-md-4">
+        <table class="table table-striped table-sm">
+        <thead>
+            <tr><th colspan="2" scope="colgroup">Mod action count last 24H</th></tr>
+            <tr><th scope="col">Moderator</th><th scope="col">Action count</th></tr>
+        </thead>
+        <tbody>
+            {% for mod, count in mod_count.items %}
+                <tr><td>{{ mod }}</td><td>{{ count }}</td></tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <table class="table table-striped table-sm">
+        <thead>
+            <tr><th colspan="2" scope="colgroup">Action count last 24H</th></tr>
+            <tr><th scope="col">Action type</th><th scope="col">Action count</th></tr>
+        </thead>
+        <tbody>
+            {% for action, count in action_count.items %}
+                <tr><td>{{ action }}</td><td>{{ count }}</td></tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <table class="table table-striped table-sm">
+        <thead>
+            <tr><th colspan="2" scope="colgroup">Most targeted users last 24H</th></tr>
+            <tr><th scope="col">Action type</th><th scope="col">Action count</th></tr>
+        </thead>
+        <tbody>
+            {% for target, count in target_count.items %}
+                <tr><td>{{ target }}</td><td>{{ count }}</td></tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    </div>
+
 {% endblock %}

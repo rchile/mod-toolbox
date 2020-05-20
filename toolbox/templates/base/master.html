@@ -5,6 +5,7 @@
     <title>{% block pagename %}Home{% endblock %} | Toolbox</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    {% block head %}{% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand navbar-dark bg-dark">
@@ -20,23 +21,20 @@
         </ul>
         <ul class="navbar-nav">
             <li class="nav-item">
-                <span class="navbar-text">Hola, u/{{ user }}</span>
+                <span class="navbar-text">Hello, u/{{ user }}</span>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Salir</a>
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
             </li>
         </ul>
     </nav>
 
     <div class="container mt-3">
-        {% if messages %}
-        <p>Información:</p>
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+        {% for message in messages %}
+        <div class="alert{% if message.tags %} {{ message.tags }}{% endif %}" role="alert">
+          {{ message }}
+        </div>
+        {% endfor %}
 
         {% block content %}{% endblock %}
     </div>
