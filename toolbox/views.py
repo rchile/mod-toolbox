@@ -12,6 +12,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from system import constants
+from system.api import api, reddit, rawapi
 from system.common import require_auth, sort_numeric_dict
 from system.database import Database
 
@@ -156,8 +157,11 @@ def user(request, username=None):
 
     list_count = 0
     list_sum = {}
+    userdata = None
 
     if username:
+        userdata = rawapi(f'user/{username}/about')
+
         db = Database.get_instance()
         list_entries = db.entries.find({'target_author': username})
         list_count = list_entries.count()
@@ -173,6 +177,7 @@ def user(request, username=None):
 
     return TemplateResponse(request, 'user.html', {
         'username': username,
+        'userdata': userdata,
         'entries_count': list_count,
         'list_sum': list_sum
     })

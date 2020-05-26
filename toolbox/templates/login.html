@@ -1,20 +1,26 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>The Toolbox</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha256-aAr2Zpq8MZ+YA/D6JtRD3xtrwpEz2IqOS+pWD/7XKIw=" crossorigin="anonymous" />
 </head>
 <body>
     <div class="container text-center mt-3">
-        <h3>The Toolbox</h3>
-        <p>To enter, please login with your Reddit account</p>
-        <p>
-            <a href="{% url 'login' %}" class="btn" style="background:#FF4500;color:#fff;font-weight:bold">
-                Login with Reddit
-            </a>
-        </p>
+        <div class="card mx-auto shadow" style="max-width: 500px">
+            <div class="card-body">
+                <img src="{% static 'rchile.png' %}" alt="r/Chile" class="mb-2" style="height: 100px">
+                <h3>The Toolbox</h3>
+                <div>To enter, please login with your Reddit account</div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'login' %}" class="btn" style="background:#FF4500;color:#fff;font-weight:bold">
+                    Login with Reddit
+                </a>
+            </div>
+        </div>
 
         {% for message in messages %}
         <div class="alert{% if message.tags %} {{ message.tags }}{% endif %}" role="alert">
