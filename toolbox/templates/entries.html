@@ -1,5 +1,4 @@
 {% extends 'base/master.html' %}
-{% load toolbox %}
 {% block pagename %}Entries{% endblock %}
 {% block content %}
     <form action="{% url 'entries' %}" class="form-inline">
@@ -19,43 +18,7 @@
         <p>Total: {{ entries_total }}</p>
 
         {% include 'base/pagination.html' %}
-        <table class="table table-striped table-sm">
-            <thead>
-                <tr>
-                    <th>action</th>
-                    <th>created_utc</th>
-                    <th>mod/target</th>
-                    <th>target_body</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for entry in entries %}
-                    <tr>
-                        <td>
-                            <span>{{ entry.action }}</span>
-                            {% if entry.target_permalink %}
-                                <br><a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">link</a>
-                            {% endif %}
-                        </td>
-                        <td>{{ entry.created_utc | format_date }} ({{ entry.created_utc | human_date }})</td>
-                        <td>
-                            <span>mod: {{ entry.mod }}</span><br>
-                            {% if entry.target_author %}
-                                <a href="{% url 'user_detail' entry.target_author %}">{{ entry.target_author }}</a>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.details %}
-                                <p>{{ entry.details }}</p>
-                            {% endif %}
-                            {% if entry.target_body %}
-                                <p>{{ entry.target_body }}</p>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% include 'base/entries_list.html' %}
 
         {% include 'base/pagination.html' %}
     {% else %}

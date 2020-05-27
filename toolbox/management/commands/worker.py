@@ -96,7 +96,7 @@ class Command(BaseCommand):
         total_entries = 0
         while len(api_entries) > 0:
             self.stdout.write('Fetching entries after ID {}'.format(last_id))
-            api_entries = get_entries(limit=1000, after=last_id)
+            api_entries = get_entries(limit=5000, after=last_id)
             if not len(api_entries):
                 self.stdout.write('No more entries found.')
                 break

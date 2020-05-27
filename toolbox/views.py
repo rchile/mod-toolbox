@@ -157,6 +157,7 @@ def user(request, username=None):
 
     list_count = 0
     list_sum = {}
+    entries = []
     userdata = None
 
     if username:
@@ -171,6 +172,8 @@ def user(request, username=None):
             return redirect(reverse('user_form'))
 
         for entry in list_entries:
+            if len(entries) < 20:
+                entries.append(entry)
             if entry['action'] not in list_sum:
                 list_sum[entry['action']] = 0
             list_sum[entry['action']] += 1
@@ -179,5 +182,6 @@ def user(request, username=None):
         'username': username,
         'userdata': userdata,
         'entries_count': list_count,
-        'list_sum': list_sum
+        'list_sum': list_sum,
+        'entries': entries
     })

@@ -19,4 +19,9 @@
             </ul>
         {% endif %}
     {% endif %}
+
+    {% if entries %}
+        <p class="font-weight-bold">Last {{ entries | length }} entries</p>
+        {% include 'base/entries_list.html' %}
+    {% endif %}
 {% endblock %}

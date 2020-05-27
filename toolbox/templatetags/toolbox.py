@@ -1,4 +1,5 @@
 import arrow
+import markdown as md
 from django import template
 
 register = template.Library()
@@ -14,3 +15,8 @@ def format_date(value):
 def human_date(value):
     m = arrow.get(value)
     return m.humanize()
+
+
+@register.filter
+def markdown(value):
+    return md.markdown(value)
