@@ -35,7 +35,7 @@ def home(request):
     total_count = db.entries.find().count()
     last_hour = db.entries.find({'created_utc': {'$gte': current_seg - 3600}}).count()
     last_24h = db.entries.find({'created_utc': {'$gte': current_seg - (3600*24)}})
-    last_bans = db.entries.find({'action': 'banuser'}).limit(30)
+    last_bans = db.entries.find({'action': 'banuser'}).limit(30).sort('created_utc', pymongo.DESCENDING)
     last_removed = db.entries.find(
         {'action': {'$in': ['removecomment', 'spamcomment', 'removelink', 'spamlink']}}
     ).limit(15).sort('created_utc', pymongo.DESCENDING)
