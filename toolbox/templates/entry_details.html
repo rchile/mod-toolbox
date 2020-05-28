@@ -15,7 +15,7 @@
     {% if entry.target_author %}
         <div>
             <strong>Target user:</strong>
-            <a href="{% url 'user_detail' entry.target_author %}" target="_blank" title="More actions for this target">
+            <a href="{% url 'user_detail' entry.target_author %}" title="More actions for this target">
                 u/{{ entry.target_author }}
             </a>
         </div>
@@ -33,7 +33,7 @@
             https://reddit.com{{ entry.target_permalink }}</a></div>
     {% endif %}
     {% if entry.target_body %}
-        <div class="font-weight-bold mb-3">Entry content</div>
+        <div class="font-weight-bold mt-3 mb-1">Entry content</div>
         <div class="target-body">{{ entry.target_body | markdown | safe }}</div>
     {% endif %}
     <hr>

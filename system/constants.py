@@ -59,3 +59,9 @@ MOD_ACTIONS = {
     'wikirevise': 'Wiki revised',
     'wikiunbanned': 'Unbanned from wiki',
 }
+
+IMPORTANT_ACTIONS = [
+    'approvecomment', 'approvelink', 'banuser', 'editflair', 'ignorereports', 'lock', 'marknsfw', 'markoriginalcontent',
+    'muteuser', 'removecomment', 'removelink', 'showcomment', 'spamcomment', 'spamlink', 'spoiler', 'unbanuser',
+    'unignorereports', 'unlock', 'unmuteuser', 'unspoiler', 'wikibanned', 'wikiunbanned'
+]

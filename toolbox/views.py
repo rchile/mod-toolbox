@@ -14,6 +14,7 @@ from django.urls import reverse
 from system import constants
 from system.api import rawapi
 from system.common import require_auth, sort_numeric_dict
+from system.constants import IMPORTANT_ACTIONS
 from system.database import Database
 
 pat_reddit_user = re.compile(r'^[a-zA-Z0-9_\-]{5,30}$')
@@ -34,6 +35,10 @@ def home(request):
     total_count = db.entries.find().count()
     last_hour = db.entries.find({'created_utc': {'$gte': current_seg - 3600}}).count()
     last_24h = db.entries.find({'created_utc': {'$gte': current_seg - (3600*24)}})
+    last_bans = db.entries.find({'action': 'banuser'}).limit(30)
+    last_removed = db.entries.find(
+        {'action': {'$in': ['removecomment', 'spamcomment', 'removelink', 'spamlink']}}
+    ).limit(15).sort('created_utc', pymongo.DESCENDING)
 
     mod_count = {}
     action_count = {}
@@ -51,7 +56,7 @@ def home(request):
             action_count[action] = 0
         action_count[action] += 1
 
-        if target and target != '[deleted]':
+        if action in IMPORTANT_ACTIONS and target and target != '[deleted]':
             if target not in target_count:
                 target_count[target] = 0
             target_count[target] += 1
@@ -84,7 +89,10 @@ def home(request):
         'approval_count': approval_count,
         'ban_count': action_count.get('banuser', 0),
         'comment_count': comments_count,
-        'automod_count': automod_count
+        'automod_count': automod_count,
+        'last_bans': last_bans,
+        'last_bans_count': min(last_bans.count(), 15),
+        'last_removed': last_removed
     })
 
 

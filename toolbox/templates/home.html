@@ -1,4 +1,5 @@
 {% extends 'base/master.html' %}
+{% load toolbox %}
 {% block pagename %}Home{% endblock %}
 {% block head %}
     <style>
@@ -98,6 +99,52 @@
         </tbody>
         </table>
     </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table table-striped table-sm">
+            <thead>
+                <tr><th colspan="3" scope="colgroup">Last {{ last_bans_count }} bans</th></tr>
+                <tr><th scope="col">Target</th><th scope="col">Mod</th><th scope="col">Details</th></tr>
+            </thead>
+            <tbody>
+                {% for ban in last_bans %}
+                    <tr>
+                        <td>{{ ban.target_author }}</td>
+                        <td>{{ ban.mod }}</td>
+                        <td>{{ ban.details }} <abbr title="{{ ban.created_utc | format_date }}">({{ ban.created_utc | human_date }} ago)</abbr></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <table class="table table-striped table-sm">
+            <thead>
+                <tr><th colspan="2" scope="colgroup">Last removed content</th></tr>
+                <tr><th scope="col">Target</th><th scope="col">Details</th></tr>
+            </thead>
+            <tbody>
+                {% for entry in last_removed %}
+                    <tr>
+                        <td>
+                            {{ entry.target_author }} ({{ entry.action }})<br>
+                            <abbr title="{{ entry.created_utc | format_date }}">({{ entry.created_utc | human_date }} ago)</abbr>
+                            (<a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">view</a>)
+                        </td>
+                        <td>
+                            {% if entry.action == 'removelink' or entry.action == 'spamlink' %}
+                                "{{ entry.target_title }}"
+                            {% else %}
+                                {{ entry.target_body | markdown | truncatewords_html:20 | safe }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
     </div>
 
 {% endblock %}
