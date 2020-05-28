@@ -1,27 +1,37 @@
 {% extends 'base/master.html' %}
+{% load toolbox %}
 {% block pagename %}User{% endblock %}
 {% block content %}
+    {% if username %}
+        <div class="row mb-4">
+            <div class="col-sm-5 clearfix">
+                <img src="{{ userdata.icon_img | safe }}" alt="u/{{ username }}" class="user-avatar">
+                <h4>u/{{ username }}</h4>
+                {% if userdata %}
+                    <div>Redditor for {{ userdata.created | human_date }}</div>
+                    <div>Karma: links ({{ userdata.link_karma }}), comments ({{ userdata.comment_karma }})</div>
+                {% endif %}
+            </div>
+            <div class="col">
+                <strong>Has been banned?</strong>
+                {% if ban_count == 0 %}No{% else %}Yes, {% if permaban %}permanently{% else %}{{ ban_count }} times{% endif %}{% endif %}.<br>
+                Comments removed: {{ removed_comments }}<br>
+                Posts removed: {{ removed_posts }}
+            </div>
+        </div>
+    {% else %}
     <form action="{% url 'user_form' %}" class="text-center">
         <label>User: <input type="text" name="username" value="{{ username }}"></label>
         <input type="submit" value="Go">
     </form>
-    {% if username %}
-        <h3>Redditor: u/{{ username }}</h3>
-        {% if userdata %}
-            <p>{{ userdata }}</p>
-        {% endif %}
-        <p>Entries for this user: {{ entries_count }}</p>
-        {% if entries_count > 0 %}
-            <ul>
-            {% for entry_type, type_sum in list_sum.items %}
-                <li>{{ entry_type }}: {{ type_sum }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
     {% endif %}
 
     {% if entries %}
-        <p class="font-weight-bold">Last {{ entries | length }} entries</p>
+        <p class="font-weight-bold">Last {{ entries_list_count }} entries (total: {{ entries_count }})</p>
         {% include 'base/entries_list.html' %}
+    {% endif %}
+    {% if userdata %}
+        <hr>
+        <pre class="raw-content">{{ userdata }}</pre>
     {% endif %}
 {% endblock %}

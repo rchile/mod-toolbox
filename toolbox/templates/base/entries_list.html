@@ -3,8 +3,7 @@
     <thead>
     <tr>
         <th>action</th>
-        <th>created_utc</th>
-        <th>mod/target</th>
+        <th>users</th>
         <th>target_body</th>
     </tr>
     </thead>
@@ -12,12 +11,9 @@
     {% for entry in entries %}
         <tr>
             <td>
-                <span>{{ entry.action }}</span>
-                {% if entry.target_permalink %}
-                    <br><a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">link</a>
-                {% endif %}
+                {{ entry.action }}<br>
+                <span title="{{ entry.created_utc | format_date }}">{{ entry.created_utc | human_date }} ago</span>
             </td>
-            <td><span title="{{ entry.created_utc | format_date }}">{{ entry.created_utc | human_date }}</span></td>
             <td>
                 <span>mod: {{ entry.mod }}</span><br>
                 {% if entry.target_author %}
@@ -26,11 +22,15 @@
             </td>
             <td>
                 {% if entry.details %}
-                    <p>{{ entry.details }}</p>
+                    <div>{{ entry.details }}</div>
                 {% endif %}
                 {% if entry.target_body %}
                     <div class="target-body">{{ entry.target_body | markdown | truncatewords:50 | safe }}</div>
                 {% endif %}
+                {% if entry.target_permalink %}
+                    (<a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">permalink</a>)
+                {% endif %}
+                (<a href="{% url 'entry' entry.id %}">details</a>)
             </td>
         </tr>
     {% endfor %}

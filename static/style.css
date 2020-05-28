@@ -3,9 +3,22 @@
     background: #ddd;
     font-size: 14px;
     padding: 5px 10px;
-    margin-bottom: 5px;
+    margin-bottom: 5px
 }
 
 .target-body p:last-child {
-    margin-bottom: 0;
+    margin-bottom: 0
+}
+
+.user-avatar {
+    height: 96px;
+    float: left;
+    margin-right: 10px
+}
+
+.raw-content {
+    white-space: pre-wrap;
+    background-color: #ddd;
+    border-radius: 5px;
+    padding:5px 10px
 }

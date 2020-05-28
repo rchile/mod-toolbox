@@ -6,13 +6,13 @@ from urllib.parse import urlencode
 
 import pymongo
 from django.contrib import messages
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, Http404
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from system import constants
-from system.api import api, reddit, rawapi
+from system.api import rawapi
 from system.common import require_auth, sort_numeric_dict
 from system.database import Database
 
@@ -144,44 +144,78 @@ def entries(request, page=1):
 
 
 @require_auth
-def user(request, username=None):
+def entry_details(request, entry_id):
+    db = Database.get_instance()
+    the_entry = db.get_entry(entry_id)
+    if the_entry is None:
+        raise Http404('Entry not found')
+
+    return TemplateResponse(request, 'entry_details.html', {'entry': the_entry})
+
+
+@require_auth
+def user_search(request):
     req_username = request.GET.get('username', '') or request.POST.get('username', '')
     if req_username and pat_reddit_user.match(req_username):
         return redirect(reverse('user_detail', kwargs={'username': req_username}))
 
-    if username is None:
-        username = ''
+    return TemplateResponse(request, 'user.html')
 
-    if username and not pat_reddit_user.match(username):
+
+@require_auth
+def user_details(request, username):
+    if not pat_reddit_user.match(username):
         return HttpResponseBadRequest('Invalid user name')
 
-    list_count = 0
     list_sum = {}
-    entries = []
-    userdata = None
+    entries_list = []
 
-    if username:
-        userdata = rawapi(f'user/{username}/about')
+    userdata = rawapi(f'user/{username}/about')
 
-        db = Database.get_instance()
-        list_entries = db.entries.find({'target_author': username})
-        list_count = list_entries.count()
+    db = Database.get_instance()
+    list_entries = db.entries.find({'target_author': username}).sort('created_utc', pymongo.ASCENDING)
+    list_count = list_entries.count()
 
-        if list_count == 0:
-            messages.add_message(request, messages.ERROR, 'No entries found for that user')
-            return redirect(reverse('user_form'))
+    if list_count == 0:
+        messages.add_message(request, messages.ERROR, 'No entries found for that user')
+        return redirect(reverse('user_form'))
 
-        for entry in list_entries:
-            if len(entries) < 20:
-                entries.append(entry)
-            if entry['action'] not in list_sum:
-                list_sum[entry['action']] = 0
-            list_sum[entry['action']] += 1
+    permaban = False
+    removed_comments = []
+    removed_posts = []
+    for entry in list_entries:
+        if len(entries_list) < 20:
+            entries_list.append(entry)
+        if entry['action'] not in list_sum:
+            list_sum[entry['action']] = 0
+        list_sum[entry['action']] += 1
+
+        # Check if user is permanently banned
+        if entry['action'] == 'banuser' and entry['details'] == 'permanent':
+            permaban = True
+        if entry['action'] == 'unbanuser' and entry['details'] == 'was permanent':
+            permaban = True
+
+        # Removed comments and posts list
+        permalink = entry.get('target_permalink', None)
+        if entry['action'] in ['removecomment', 'spamcomment'] and permalink not in removed_comments:
+            removed_comments.append(permalink)
+        if entry['action'] == 'approvecomment' and permalink in removed_comments:
+            removed_comments.remove(permalink)
+        if entry['action'] in ['removelink', 'spamlink'] and permalink not in removed_posts:
+            removed_posts.append(permalink)
+        if entry['action'] == 'approvelink' and permalink in removed_posts:
+            removed_posts.remove(permalink)
 
     return TemplateResponse(request, 'user.html', {
         'username': username,
         'userdata': userdata,
         'entries_count': list_count,
+        'entries_list_count': len(entries_list),
         'list_sum': list_sum,
-        'entries': entries
+        'entries': reversed(entries_list),
+        'ban_count': list_sum.get('banuser', 0),
+        'permaban': permaban,
+        'removed_comments': len(removed_comments),
+        'removed_posts': len(removed_posts)
     })

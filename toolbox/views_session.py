@@ -40,7 +40,7 @@ def login_return(request):
     reddit = reddit_instance()
     try:
         request.session['auth_code'] = reddit.auth.authorize(auth_code)
-        request.session['auth_user'] = reddit.user.me().name
+        request.session['auth_user'] = reddit.user_details.me().name
         request.session['auth_sub'] = settings.REDDIT_DEFAULT_SUB
 
         return redirect('home')

@@ -47,7 +47,7 @@ class Database:
         if not self.db:
             return None
 
-        entry = self.entries.find({'id': entry_id}, projection={'_id': 0}).limit(1)
+        entry = self.entries.find_one({'id': entry_id}, projection={'_id': 0})
         return entry
 
     def set_entry_note(self, entry_id, note):

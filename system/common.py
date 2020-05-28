@@ -94,7 +94,7 @@ def require_auth(f):
         if isinstance(view_response, TemplateResponse):
             if not view_response.context_data:
                 view_response.context_data = {}
-            view_response.context_data['user'] = user
+            view_response.context_data['reddit_user'] = user
             return view_response.render()
         else:
             return view_response

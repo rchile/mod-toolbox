@@ -1,0 +1,41 @@
+{% extends 'base/master.html' %}
+{% load toolbox %}
+{% block pagename %}Entry details{% endblock %}
+{% block content %}
+    <h4>Entry details: {{ entry.id }}</h4>
+    <div><strong>Moderator:</strong> {{ entry.mod }}</div>
+    <div>
+        <strong>Action taken:</strong>
+        {{ entry.action | modaction_description }} <span class="text-muted">({{ entry.action }})</span>
+    </div>
+    <div>
+        <strong>Entry date:</strong>
+        {{ entry.created_utc | format_date }} <span class="text-muted">({{ entry.created_utc | human_date }} ago)</span>
+    </div>
+    {% if entry.target_author %}
+        <div>
+            <strong>Target user:</strong>
+            <a href="{% url 'user_detail' entry.target_author %}" target="_blank" title="More actions for this target">
+                u/{{ entry.target_author }}
+            </a>
+        </div>
+    {% endif %}
+    {% if entry.details %}
+        <div><strong>Details:</strong> "{{ entry.details }}"</div>
+    {% endif %}
+    {% if entry.target_title %}
+        <div class="font-weight-bold mt-2">Post title</div>
+        <div>{{ entry.target_title }}</div>
+    {% endif %}
+    {% if entry.target_permalink %}
+        <div class="font-weight-bold mt-2">Content permalink</div>
+        <div><a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">
+            https://reddit.com{{ entry.target_permalink }}</a></div>
+    {% endif %}
+    {% if entry.target_body %}
+        <div class="font-weight-bold mb-3">Entry content</div>
+        <div class="target-body">{{ entry.target_body | markdown | safe }}</div>
+    {% endif %}
+    <hr>
+    <pre class="raw-content">{{ entry }}</pre>
+{% endblock %}
