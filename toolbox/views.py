@@ -14,7 +14,7 @@ from django.urls import reverse
 from system import constants
 from system.api import rawapi
 from system.common import require_auth, sort_numeric_dict
-from system.constants import IMPORTANT_ACTIONS
+from system.constants import IMPORTANT_ACTIONS, MOD_ACTIONS
 from system.database import Database
 
 pat_reddit_user = re.compile(r'^[a-zA-Z0-9_\-]{5,30}$')
@@ -175,8 +175,9 @@ def user_details(request, username):
     if not pat_reddit_user.match(username):
         return HttpResponseBadRequest('Invalid user name')
 
-    list_sum = {}
-    entries_list = []
+    action_filter = request.GET.get('action', '')
+    if action_filter and action_filter not in MOD_ACTIONS:
+        return HttpResponseBadRequest('Invalid mod action filter')
 
     userdata = rawapi(f'user/{username}/about')
 
@@ -189,10 +190,12 @@ def user_details(request, username):
         return redirect(reverse('user_form'))
 
     permaban = False
+    list_sum = {}
+    entries_list = []
     removed_comments = []
     removed_posts = []
     for entry in list_entries:
-        if len(entries_list) < 20:
+        if len(entries_list) < 20 and (not action_filter or entry['action'] == action_filter):
             entries_list.append(entry)
         if entry['action'] not in list_sum:
             list_sum[entry['action']] = 0
@@ -218,10 +221,11 @@ def user_details(request, username):
     return TemplateResponse(request, 'user.html', {
         'username': username,
         'userdata': userdata,
+        'entries': reversed(entries_list),
         'entries_count': list_count,
         'entries_list_count': len(entries_list),
+        'action_filter': action_filter,
         'list_sum': list_sum,
-        'entries': reversed(entries_list),
         'ban_count': list_sum.get('banuser', 0),
         'permaban': permaban,
         'removed_comments': len(removed_comments),

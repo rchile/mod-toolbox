@@ -7,14 +7,22 @@
             <div class="col-sm-5 clearfix">
                 <img src="{{ userdata.icon_img | safe }}" alt="u/{{ username }}" class="user-avatar">
                 <h4>u/{{ username }}</h4>
+                <div class="small"><a href="https://reddit.com/user/{{ username }}" target="_blank">(view profile)</a></div>
                 {% if userdata %}
-                    <div>Redditor for {{ userdata.created | human_date }}</div>
-                    <div>Karma: links ({{ userdata.link_karma }}), comments ({{ userdata.comment_karma }})</div>
+                    <div class="small">Redditor for {{ userdata.created | human_date }}</div>
+                    <div class="small">
+                        Karma: links (<span{% if userdata.link_karma < 0 %} class="text-danger font-weight-bold"{% endif %}>{{ userdata.link_karma }}</span>),
+                        comments (<span{% if userdata.comment_karma < 0 %} class="text-danger font-weight-bold"{% endif %}>{{ userdata.comment_karma }}</span>)</div>
                 {% endif %}
             </div>
             <div class="col">
                 <strong>Has been banned?</strong>
-                {% if ban_count == 0 %}No{% else %}Yes, {% if permaban %}permanently{% else %}{{ ban_count }} times{% endif %}{% endif %}.<br>
+                {% if ban_count == 0 %}
+                    No
+                {% else %}
+                    <a href="{% url 'user_detail' username %}?action=banuser">
+                        Yes, {% if permaban %}permanently{% else %}{{ ban_count }} times{% endif %}</a>
+                {% endif %}<br>
                 Comments removed: {{ removed_comments }}<br>
                 Posts removed: {{ removed_posts }}
             </div>
@@ -27,7 +35,10 @@
     {% endif %}
 
     {% if entries %}
-        <p class="font-weight-bold">Last {{ entries_list_count }} entries (total: {{ entries_count }})</p>
+        <p class="font-weight-bold">
+            Last {{ entries_list_count }} entries
+            (total: {{ entries_count }}{% if action_filter %}, filtered by the {{ action_filter }} action{% endif %})
+        </p>
         {% include 'base/entries_list.html' %}
     {% endif %}
     {% if userdata %}

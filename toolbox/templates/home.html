@@ -15,47 +15,29 @@
     <div class="card-deck mt-3">
         <div class="card bg-primary text-light">
             <a href="{% url 'entries' %}">
-                <div class="card-body">
-                    <h4>{{ last_24h }}</h4>
-                    Actions last 24H
-                </div>
+                <div class="card-body"><h4>{{ last_24h }}</h4>Actions last 24H</div>
             </a>
         </div>
         <div class="card bg-info text-light">
             <a href="{% url 'entries' %}?mod=AutoModerator">
-                <div class="card-body">
-                    <h4>{{ automod_count }}</h4>
-                    Automatic actions
-                </div>
+                <div class="card-body"><h4>{{ automod_count }}</h4>Automatic actions</div>
             </a>
         </div>
         <div class="card bg-warning">
             <a href="{% url 'entries' %}?action=removecomment">
-                <div class="card-body">
-                    <h4>{{ comment_count }}</h4>
-                    Removed comments
-                </div>
+                <div class="card-body"><h4>{{ comment_count }}</h4>Removed comments</div>
             </a>
         </div>
         <div class="card bg-warning">
             <a href="{% url 'entries' %}?action=removelink">
-                <div class="card-body">
-                    <h4>{{ posts_count }}</h4>
-                    Removed posts
-                </div>
+                <div class="card-body"><h4>{{ posts_count }}</h4>Removed posts</div>
             </a>
         </div>
         <div class="card bg-success text-light">
-            <div class="card-body">
-                <h4>{{ approval_count }}</h4>
-                Approved content
-            </div>
+            <div class="card-body"><h4>{{ approval_count }}</h4>Approved content</div>
         </div>
         <div class="card bg-danger text-light">
-            <div class="card-body">
-                <h4>{{ ban_count }}</h4>
-                Banned users
-            </div>
+            <div class="card-body"><h4>{{ ban_count }}</h4>Banned users</div>
         </div>
     </div>
 
@@ -94,7 +76,7 @@
         </thead>
         <tbody>
             {% for target, count in target_count.items %}
-                <tr><td>{{ target }}</td><td>{{ count }}</td></tr>
+                <tr><td><a href="{% url 'user_detail' target %}">{{ target }}</a></td><td>{{ count }}</td></tr>
             {% endfor %}
         </tbody>
         </table>
@@ -111,9 +93,12 @@
             <tbody>
                 {% for ban in last_bans %}
                     <tr>
-                        <td>{{ ban.target_author }}</td>
+                        <td><a href="{% url 'user_detail' ban.target_author %}">u/{{ ban.target_author }}</a></td>
                         <td>{{ ban.mod }}</td>
-                        <td>{{ ban.details }} <abbr title="{{ ban.created_utc | format_date }}">({{ ban.created_utc | human_date }} ago)</abbr></td>
+                        <td>
+                            <a href="{% url 'entry' ban.id %}" title="More details">{{ ban.details }}</a>
+                            <abbr title="{{ ban.created_utc | format_date }}">({{ ban.created_utc | human_date }} ago)</abbr>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -129,7 +114,8 @@
                 {% for entry in last_removed %}
                     <tr>
                         <td>
-                            {{ entry.target_author }} ({{ entry.action }})<br>
+                            <a href="{% url 'user_detail' entry.target_author %}">{{ entry.target_author }}</a>
+                            (<a href="{% url 'entry' entry.id %}" title="More details">{{ entry.action }}</a>)<br>
                             <abbr title="{{ entry.created_utc | format_date }}">({{ entry.created_utc | human_date }} ago)</abbr>
                             (<a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">view</a>)
                         </td>
