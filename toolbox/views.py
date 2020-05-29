@@ -1,3 +1,4 @@
+import json
 import re
 import math
 from collections import OrderedDict
@@ -12,8 +13,8 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from system import constants
-from system.api import rawapi
-from system.common import require_auth, sort_numeric_dict
+from system.api import rawapi, raw_oauthapi
+from system.common import require_auth, sort_numeric_dict, pat_reddit_id
 from system.constants import IMPORTANT_ACTIONS, MOD_ACTIONS
 from system.database import Database
 
@@ -179,7 +180,7 @@ def user_details(request, username):
     if action_filter and action_filter not in MOD_ACTIONS:
         return HttpResponseBadRequest('Invalid mod action filter')
 
-    userdata = rawapi(f'user/{username}/about')
+    userdata = rawapi(f'user/{username}/about')['data']
 
     db = Database.get_instance()
     list_entries = db.entries.find({'target_author': username}).sort('created_utc', pymongo.ASCENDING)
@@ -230,4 +231,28 @@ def user_details(request, username):
         'permaban': permaban,
         'removed_comments': len(removed_comments),
         'removed_posts': len(removed_posts)
+    })
+
+
+@require_auth
+def modmail(request, convo_id=None):
+    token = request.session['auth_code']
+    if convo_id:
+        if not pat_reddit_id.match(convo_id):
+            return HttpResponseBadRequest('Invalid conversation ID')
+
+        data = raw_oauthapi('api/mod/conversations/' + convo_id, token)
+        data['conversation']['participant'] = data['user']
+        conversations = [data['conversation']]
+    else:
+        data = raw_oauthapi('api/mod/conversations?sort=recent', token)
+        conversations = [v for k, v in data['conversations'].items()]
+
+    for convo in conversations:
+        convo['messages'] = [data['messages'][x['id']] for x in convo['objIds'] if x['id'] in data['messages']]
+
+    return TemplateResponse(request, 'modmail.html', {
+        'conversations': conversations,
+        'convo_id': convo_id,
+        'data': json.dumps(data)
     })

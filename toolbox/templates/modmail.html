@@ -1,0 +1,26 @@
+{% extends 'base/master.html' %}
+{% load toolbox %}
+{% block pagename %}Entries{% endblock %}
+{% block content %}
+    {% for convo in conversations %}
+        <div class="card{% if forloop.counter != 1 %} mt-3{% endif %}">
+            <div class="card-body">
+                <div>
+                    <span class="font-weight-bold">{{ convo.subject }}</span> - to u/{{ convo.participant.name }}
+                    {% if not convo_id %}
+                        - {{ convo.numMessages }} messages
+                        <a href="{% url 'modmail_details' convo.id %}">(details)</a>
+                    {% endif %}
+                </div>
+                <hr>
+                {% for message in convo.messages %}
+                    <div class="mt-3">
+                        u/{{ message.author.name }}{% if message.author.isHidden %} (hidden){% endif %},
+                        <abbr title="{{ message.date | format_date }}">{{ message.date | human_date }} ago</abbr>
+                    </div>
+                    <div class="target-body mt-2">{{ message.body | safe }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

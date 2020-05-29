@@ -16,6 +16,7 @@ from system.api import reddit_instance
 logger = logging.getLogger('rchilemt')
 
 pat_modlog_entry_id = re.compile(r'^ModAction_[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')
+pat_reddit_id = re.compile(r'^[a-z0-9/]{5,10}$')
 
 
 def random_str(length=15):
@@ -62,6 +63,7 @@ def require_auth(f):
 
         # Instantiate reddit session interface
         reddit = reddit_instance(auth_code)
+        setattr(request, 'reddit', reddit)
 
         # Check session only if last check was done 5 minutes ago or more
         last_check = request.session.get('last_session_check', 0)
