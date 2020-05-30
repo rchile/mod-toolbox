@@ -31,15 +31,18 @@ def rawapi(url, append_json=True, auth=False, oauth=False):
         url += '.json'
 
     headers = {'User-Agent': settings.REDDIT_APP_UA, 'Accept': 'application/json'}
+    httpauth = None
     if auth:
         headers['Authorization'] = 'Bearer ' + (settings.REDDIT_APP_REFRESH if isinstance(auth, bool) else auth)
+        if not oauth:
+            httpauth = (settings.REDDIT_APP_ID, settings.REDDIT_APP_SECRET)
 
     headers_log = headers.copy()
     if 'Authorization' in headers_log:
         headers_log['Authorization'] = 'Bearer ***'
 
     logger.debug('Requesting url %s headers %s', url, headers_log)
-    data = requests.get(url, headers=headers)
+    data = requests.get(url, headers=headers, auth=httpauth)
     try:
         data = data.json()
     except JSONDecodeError:
@@ -50,10 +53,10 @@ def rawapi(url, append_json=True, auth=False, oauth=False):
     return data
 
 
-def raw_oauthapi(url, token):
+def raw_oauthapi(url, token=None):
     headers = {'User-Agent': settings.REDDIT_APP_UA}
     auth = (settings.REDDIT_APP_ID, settings.REDDIT_APP_SECRET)
-    auth_data = {'grant_type': 'refresh_token', 'refresh_token': token}
+    auth_data = {'grant_type': 'refresh_token', 'refresh_token': token or settings.REDDIT_APP_REFRESH}
 
     logger.debug('Manually fetching access_token with refresh token...')
     response = requests.post('https://www.reddit.com' + ACCESS_TOKEN_PATH, headers=headers, data=auth_data, auth=auth)
