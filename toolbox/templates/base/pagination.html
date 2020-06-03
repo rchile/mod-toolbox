@@ -1,10 +1,9 @@
 {% if prev_page or next_page %}
-    <div>
     {% if prev_page %}
-        <a href="{% url 'entries_paged' prev_page %}{{ url_filters }}" class="float-left">Previous</a>
+        <a href="{% url 'entries_paged' prev_page %}{{ url_filters }}" class="float-left btn btn-primary btn-sm">Previous</a>
     {% endif %}
     {% if next_page %}
-        <a href="{% url 'entries_paged' next_page %}{{ url_filters }}" class="float-right">Next</a>
+        <a href="{% url 'entries_paged' next_page %}{{ url_filters }}" class="float-right btn btn-primary btn-sm">Next</a>
     {% endif %}
-    </div>
+    <br class="clearfix">
 {% endif %}

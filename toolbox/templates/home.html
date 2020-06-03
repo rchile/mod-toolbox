@@ -4,6 +4,8 @@
 {% block head %}
     <style>
     .card-body { padding: 12px; font-size: 14px }
+    .card { text-shadow: 1px 1px 1px #666 }
+    .card.text-light { text-shadow: 1px 1px 2px #555 }
     .card a { color: #000 }
     .card a:hover { text-decoration: none }
     .text-light a { color: #fff }
@@ -37,7 +39,9 @@
             <div class="card-body"><h4>{{ approval_count }}</h4>Approved content</div>
         </div>
         <div class="card bg-danger text-light">
-            <div class="card-body"><h4>{{ ban_count }}</h4>Banned users</div>
+            <a href="{% url 'entries' %}?action=banuser">
+                <div class="card-body"><h4>{{ ban_count }}</h4>Banned users</div>
+            </a>
         </div>
     </div>
 

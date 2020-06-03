@@ -17,10 +17,9 @@
     {% if entries_total > 0 %}
         <p>Total: {{ entries_total }}</p>
 
-        {% include 'base/pagination.html' %}
+        <div class="mb-3">{% include 'base/pagination.html' %}</div>
         {% include 'base/entries_list.html' %}
-
-        {% include 'base/pagination.html' %}
+        <div>{% include 'base/pagination.html' %}</div>
     {% else %}
         <p>No se encontraron entradas.</p>
     {% endif %}

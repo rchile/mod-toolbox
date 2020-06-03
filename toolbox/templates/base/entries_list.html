@@ -1,13 +1,11 @@
 {% load toolbox %}
-<table class="table table-striped table-sm table-responsive">
-    <thead>
+<div class="table-responsive">
+<table class="table table-striped table-sm">
     <tr>
         <th>Action</th>
         <th>Mod and target</th>
         <th>Details</th>
     </tr>
-    </thead>
-    <tbody>
     {% for entry in entries %}
         <tr>
             <td>
@@ -27,6 +25,9 @@
                 {% if entry.target_title %}
                     <div>"{{ entry.target_title }}"</div>
                 {% endif %}
+                {% if entry.description %}
+                    <div>"{{ entry.description }}"</div>
+                {% endif %}
                 {% if entry.target_body %}
                     <div class="target-body">{{ entry.target_body | markdown | truncatewords:50 | safe }}</div>
                 {% endif %}
@@ -39,5 +40,5 @@
     {% empty %}
         <tr><th colspan="3" class="text-center">No actions available to display.</th></tr>
     {% endfor %}
-    </tbody>
 </table>
+</div>

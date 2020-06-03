@@ -5,6 +5,7 @@ from collections import OrderedDict
 from datetime import datetime
 from urllib.parse import urlencode
 
+import arrow
 import pymongo
 from django.contrib import messages
 from django.http import HttpResponseBadRequest, Http404
@@ -250,9 +251,10 @@ def modmail(request, convo_id=None):
 
     for convo in conversations:
         convo['messages'] = [data['messages'][x['id']] for x in convo['objIds'] if x['id'] in data['messages']]
+        convo['dt'] = arrow.get(convo['lastUpdated']).timestamp
 
     return TemplateResponse(request, 'modmail.html', {
-        'conversations': conversations,
+        'conversations': sorted(conversations, key=lambda x: x['dt'], reverse=True),
         'convo_id': convo_id,
         'data': json.dumps(data)
     })
