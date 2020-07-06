@@ -214,7 +214,7 @@ def user_details(request, username):
         if entry['action'] == 'approvelink' and permalink in removed_posts:
             removed_posts.remove(permalink)
 
-    entries_display = entries_list[::-1][:50]
+    entries_display = entries_list[-50:][::-1]
     return TemplateResponse(request, 'user.html', {
         'username': username,
         'userdata': userdata,
