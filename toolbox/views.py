@@ -9,7 +9,7 @@ import arrow
 import pymongo
 from django.contrib import messages
 from django.http import HttpResponseBadRequest, Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 
@@ -21,12 +21,6 @@ from system.database import Database
 
 pat_reddit_user = re.compile(r'^[a-zA-Z0-9_\-]{5,30}$')
 pat_reddit_modaction = re.compile(r'^[a-z]{5,30}$')
-
-
-def index(request):
-    return render(request, 'login.html', context={
-        'messages': messages.get_messages(request)
-    })
 
 
 @require_auth
@@ -197,7 +191,7 @@ def user_details(request, username):
     removed_comments = []
     removed_posts = []
     for entry in list_entries:
-        if len(entries_list) < 20 and (not action_filter or entry['action'] == action_filter):
+        if not action_filter or entry['action'] == action_filter:
             entries_list.append(entry)
         if entry['action'] not in list_sum:
             list_sum[entry['action']] = 0
@@ -220,12 +214,13 @@ def user_details(request, username):
         if entry['action'] == 'approvelink' and permalink in removed_posts:
             removed_posts.remove(permalink)
 
+    entries_display = entries_list[::-1][:50]
     return TemplateResponse(request, 'user.html', {
         'username': username,
         'userdata': userdata,
-        'entries': reversed(entries_list),
+        'entries': entries_display,
         'entries_count': list_count,
-        'entries_list_count': len(entries_list),
+        'entries_list_count': len(entries_display),
         'action_filter': action_filter,
         'list_sum': list_sum,
         'ban_count': list_sum.get('banuser', 0),

@@ -1,10 +1,19 @@
 from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from prawcore import OAuthException
 
 from system.common import random_str, logger
 from system.api import reddit_instance
+
+
+def index(request):
+    if request.session.get('auth_code', ''):
+        return redirect('home')
+
+    return render(request, 'login.html', context={
+        'messages': messages.get_messages(request)
+    })
 
 
 def login(request):
