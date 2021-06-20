@@ -242,11 +242,11 @@ def modmail(request, convo_id=None):
         conversations = [data['conversation']]
     else:
         data = raw_oauthapi('api/mod/conversations?sort=recent', token)
-        conversations = [v for k, v in data['conversations'].items()]
+        conversations = data['conversations'].values()
 
     for convo in conversations:
         convo['messages'] = [data['messages'][x['id']] for x in convo['objIds'] if x['id'] in data['messages']]
-        convo['dt'] = arrow.get(convo['lastUpdated']).timestamp
+        convo['dt'] = arrow.get(convo['lastUpdated']).timestamp()
 
     return TemplateResponse(request, 'modmail.html', {
         'conversations': sorted(conversations, key=lambda x: x['dt'], reverse=True),

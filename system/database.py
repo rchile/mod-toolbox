@@ -30,9 +30,9 @@ class Database:
         self.db = client.get_database()
         self.entries = self.db.get_collection('entries')
 
-        col_count = self.entries.count()
         log.info('Connected to the database, name: %s', self.db.name)
-        log.info('DB entry count: %d', col_count)
+        # col_count = self.entries.count()
+        # log.info('DB entry count: %d', col_count)
 
         # Create indexes for data retrieval and to avoid dupes.
         self.entries.create_index('id', unique=True)

@@ -1,4 +1,6 @@
+import logging
 import time
+import os
 
 import pymongo
 from django.core.management import BaseCommand
@@ -6,6 +8,8 @@ from praw.models import ModAction
 
 from system.api import api
 from system.database import Database
+
+log = logging.getLogger('worker')
 
 
 def serialize(item: ModAction):
@@ -32,19 +36,22 @@ class Command(BaseCommand):
         self.db = None
 
     def handle(self, *args, **options):
-        self.stdout.write('Connecting to the database...')
         self.db = Database.get_instance()
-        self.stdout.write('Connected.')
-        self.stdout.write('Starting the worker loop...')
+        daemon = os.getenv('MTB_WORKER_DAEMON', '1') == '1'
 
         try:
-            while True:
+            if daemon:
+                log.info('Starting the worker loop...')
+                while True:
+                    self.worker()
+                    time.sleep(5)
+            else:
+                log.info('Running worker...')
                 self.worker()
-                time.sleep(5)
         except KeyboardInterrupt:
-            self.stdout.write('Keyboard interrupt received!')
+            log.info('Keyboard interrupt received!')
 
-        self.stdout.write('Goodbye!')
+        log.info('Goodbye!')
 
     def worker(self):
         last = self.db.entries.find_one(sort=[("created_utc", pymongo.DESCENDING)])
@@ -53,39 +60,39 @@ class Command(BaseCommand):
         last_api = None if not last_api else last_api[0]
 
         if not last_api:
-            self.stdout.write('No entries available, or the API is unavailable.')
+            log.info('No entries available, or the API is unavailable.')
             return
 
         last_id = None if not last else last['id']
         if last_id == last_api['id']:
-            self.stdout.write('Database is up-to-date.')
+            log.info('Database is up-to-date.')
             return
 
-        self.stdout.write('Needs update, last entry on DB is different than the last one from the API')
-        self.stdout.write('Latest API entry: {} {}'.format(last_api['id'], last_api['created_utc']))
+        log.info('Needs update, last entry on DB is different than the last one from the API')
+        log.info('Latest API entry: {} {}'.format(last_api['id'], last_api['created_utc']))
 
         if last:
-            self.stdout.write('Latest entry in database: {} {}'.format(last['id'], last['created_utc']))
+            log.info('Latest entry in database: {} {}'.format(last['id'], last['created_utc']))
             total_entries = self.partial_sync(last_id)
         else:
-            self.stdout.write('Entries collection is empty, running full sync.')
+            log.info('Entries collection is empty, running full sync.')
             total_entries = self.full_sync()
 
-        self.stdout.write('Sync finished. Entries added: {}'.format(total_entries))
+        log.info('Sync finished. Entries added: {}'.format(total_entries))
 
     def partial_sync(self, last_id):
         api_entries = [0]
         total_entries = 0
         while len(api_entries) > 0:
-            self.stdout.write('Fetching entries after ID {}'.format(last_id))
+            log.info('Fetching entries after ID {}'.format(last_id))
             api_entries = get_entries(limit=100, before=last_id)
             if not len(api_entries):
-                self.stdout.write('No more entries found.')
+                log.info('No more entries found.')
                 break
 
             total_entries += len(api_entries)
             last_id = api_entries[0]['id']
-            self.stdout.write('Current batch ID: {}, inserting {} entries (suming up {}).'.format(
+            log.info('Current batch ID: {}, inserting {} entries (suming up {}).'.format(
                 last_id, len(api_entries), total_entries))
             self.db.insert_entries(api_entries)
         return total_entries
@@ -95,15 +102,15 @@ class Command(BaseCommand):
         api_entries = [0]
         total_entries = 0
         while len(api_entries) > 0:
-            self.stdout.write('Fetching entries after ID {}'.format(last_id))
+            log.info('Fetching entries after ID {}'.format(last_id))
             api_entries = get_entries(limit=5000, after=last_id)
             if not len(api_entries):
-                self.stdout.write('No more entries found.')
+                log.info('No more entries found.')
                 break
 
             last_id = api_entries[-1]['id']
             total_entries += len(api_entries)
-            self.stdout.write('Current batch ID: {}, inserting {} entries (suming up {}).'.format(
+            log.info('Current batch ID: {}, inserting {} entries (suming up {}).'.format(
                 last_id, len(api_entries), total_entries))
             self.db.insert_entries(api_entries)
 
