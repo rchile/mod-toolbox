@@ -54,7 +54,7 @@
         </thead>
         <tbody>
             {% for mod, count in mod_count.items %}
-                <tr><td>{{ mod }}</td><td>{{ count }}</td></tr>
+                <tr><td><a href="{% url 'entries' %}?mod={{ mod }}">{{ mod }}</a></td><td>{{ count }}</td></tr>
             {% endfor %}
         </tbody>
         </table>
@@ -67,7 +67,7 @@
         </thead>
         <tbody>
             {% for action, count in action_count.items %}
-                <tr><td>{{ action }}</td><td>{{ count }}</td></tr>
+                <tr><td><a href="{% url 'entries' %}?action={{ action }}">{{ action }}</a></td><td>{{ count }}</td></tr>
             {% endfor %}
         </tbody>
         </table>

@@ -1,9 +1,11 @@
 {% if prev_page or next_page %}
+    <div class="text-center pt-3">
     {% if prev_page %}
         <a href="{% url 'entries_paged' prev_page %}{{ url_filters }}" class="float-left btn btn-primary btn-sm">Previous</a>
     {% endif %}
+    {% if entries_total %}<span style="display:inline-block;padding-top:5px">Total: {{ entries_total }}</span>{% endif %}
     {% if next_page %}
         <a href="{% url 'entries_paged' next_page %}{{ url_filters }}" class="float-right btn btn-primary btn-sm">Next</a>
     {% endif %}
-    <br class="clearfix">
+    </div>
 {% endif %}

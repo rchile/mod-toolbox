@@ -110,9 +110,17 @@ def entries(request, page=1):
     else:
         filter_user = ''
 
+    # Validate mod filter
+    filter_mod = request.GET.get('mod', '').strip()
+    if filter_mod and pat_reddit_user.match(filter_mod):
+        q_filters['mod'] = filter_mod
+        url_filters['mod'] = filter_mod
+    else:
+        filter_mod = ''
+
     # Validate action filter
     filter_action = request.GET.get('action', '').strip()
-    if filter_action and pat_reddit_user.match(filter_action):
+    if filter_action and pat_reddit_modaction.match(filter_action):
         q_filters['action'] = filter_action
         url_filters['action'] = filter_action
     else:
@@ -140,6 +148,7 @@ def entries(request, page=1):
         'entries_total': n_entries,
         'filter_user': filter_user,
         'filter_action': filter_action,
+        'filter_mod': filter_mod,
         'mod_actions': constants.MOD_ACTIONS,
         'prev_page': prev_page,
         'next_page': next_page,

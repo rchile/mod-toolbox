@@ -4,6 +4,8 @@
     <form action="{% url 'entries' %}" class="form-inline">
         <label for="form-filter-user" class="mr-sm-2">User:</label>
         <input type="text" class="form-control mr-sm-2" id="form-filter-user" name="user" value="{{ filter_user }}">
+        <label for="form-filter-mod" class="mr-sm-2">Mod:</label>
+        <input type="text" class="form-control mr-sm-2" id="form-filter-mod" name="mod" value="{{ filter_mod }}">
         <label for="form-filter-action" class="mr-sm-2">Action:</label>
         <select name="action" class="form-control mr-sm-2" id="form-filter-action">
             <option value="">-------------</option>
@@ -15,8 +17,6 @@
     </form>
 
     {% if entries_total > 0 %}
-        <p>Total: {{ entries_total }}</p>
-
         <div class="mb-3">{% include 'base/pagination.html' %}</div>
         {% include 'base/entries_list.html' %}
         <div>{% include 'base/pagination.html' %}</div>
