@@ -34,15 +34,39 @@
     </form>
     {% endif %}
 
-    {% if entries %}
-        <p class="font-weight-bold">
-            Last {{ entries_list_count }} entries
-            (total: {{ entries_count }}{% if action_filter %}, filtered by the {{ action_filter }} action{% endif %})
-        </p>
-        {% include 'base/entries_list.html' %}
-    {% endif %}
+        <div class="d-flex mb-2 justify-content-between align-items-end">
+            <div class="font-weight-bold">
+            {% if entries %}
+                Last {{ entries_list_count }} entries
+                (total: {{ entries_count }}{% if action_filter %}, filtered by the {{ action_filter }} action{% endif %})
+            {% else %}
+                No entries found
+            {% endif %}
+            </div>
+            <div>
+                <select name="action" class="form-control form-control-sm mr-sm-2" id="form-filter-action">
+                    <option value="">-- no action filter --</option>
+                    {% for entry_value, entry_name in mod_actions.items %}
+                        <option value="{{ entry_value }}"{% if action_filter == entry_value %} selected{% endif %}>{{ entry_value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% if entries %}
+            {% include 'base/entries_list.html' %}
+        {% endif %}
     {% if userdata %}
         <hr>
         <pre class="raw-content">{{ userdata }}</pre>
     {% endif %}
+    <script>
+    const initialFilter = '{{ action_filter }}';
+    const selectFilter = document.querySelector('select[name="action"]');
+    selectFilter.addEventListener('change', () => {
+        let value = selectFilter.value;
+        if (value !== initialFilter) {
+            location.href = '?action=' + value;
+        }
+    });
+    </script>
 {% endblock %}

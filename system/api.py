@@ -47,8 +47,8 @@ def rawapi(url, append_json=True, auth=False, oauth=False):
         data = data.json()
     except JSONDecodeError:
         logger.error('Invalid JSON retrieved')
-        logger.error(data)
-        raise RuntimeError('Invalid JSON retrieved')
+        logger.error(data.text)
+        raise RuntimeError('Invalid JSON retrieved') from None
 
     return data
 

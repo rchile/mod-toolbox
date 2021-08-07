@@ -19,7 +19,7 @@ from system.common import require_auth, sort_numeric_dict, pat_reddit_id
 from system.constants import IMPORTANT_ACTIONS, MOD_ACTIONS
 from system.database import Database
 
-pat_reddit_user = re.compile(r'^[a-zA-Z0-9_\-]{5,30}$')
+pat_reddit_user = re.compile(r'^[a-zA-Z0-9_\-]{5,30}|Anti-Evil Operations$')
 pat_reddit_modaction = re.compile(r'^[a-z]{5,30}$')
 
 
@@ -182,7 +182,7 @@ def user_details(request, username):
 
     action_filter = request.GET.get('action', '')
     if action_filter and action_filter not in MOD_ACTIONS:
-        return HttpResponseBadRequest('Invalid mod action filter')
+        action_filter = None
 
     userdata = rawapi(f'user/{username}/about')['data']
 
@@ -230,6 +230,7 @@ def user_details(request, username):
         'entries': entries_display,
         'entries_count': list_count,
         'entries_list_count': len(entries_display),
+        'mod_actions': constants.MOD_ACTIONS,
         'action_filter': action_filter,
         'list_sum': list_sum,
         'ban_count': list_sum.get('banuser', 0),
