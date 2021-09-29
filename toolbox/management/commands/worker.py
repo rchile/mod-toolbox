@@ -34,20 +34,20 @@ class Command(BaseCommand):
     def __init__(self):
         super().__init__()
         self.db = None
+    
+    def add_arguments(self, parser):
+        parser.add_argument('--once', '-o', dest='once', action='store_true', default=False)
 
     def handle(self, *args, **options):
         self.db = Database.get_instance()
-        daemon = os.getenv('MTB_WORKER_DAEMON', '1') == '1'
+        daemon = not options['once'] and os.getenv('MTB_WORKER_DAEMON', '1') == '1'
 
         try:
-            if daemon:
-                log.info('Starting the worker loop...')
-                while True:
-                    self.worker()
-                    time.sleep(5)
-            else:
-                log.info('Running worker...')
+            while 1:
                 self.worker()
+                if not daemon:
+                    break
+                time.sleep(5)
         except KeyboardInterrupt:
             log.info('Keyboard interrupt received!')
 
