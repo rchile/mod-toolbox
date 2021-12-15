@@ -44,9 +44,6 @@ class Database:
         :param entry_id: The `id` value from the entry.
         :return: The entry if found. `None` if not found or if the database is not ready.
         """
-        if not self.db:
-            return None
-
         entry = self.entries.find_one({'id': entry_id}, projection={'_id': 0})
         return entry
 
@@ -69,8 +66,6 @@ class Database:
         :return: The result of the `insert_many` operation. If the database is not ready, or if no missing
         entries were found, then nothing is done and an empty `list` is returned.
         """
-        if not self.db:
-            return []
 
         # Fetch a list of IDs of entries that are already in the database.
         id_list = [e['id'] for e in entries]
