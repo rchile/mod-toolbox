@@ -136,7 +136,7 @@ def entries(request, page=1):
 
     n_limit = 30
     list_entries = db.entries.find(q_filters, limit=n_limit, sort=[("created_utc", pymongo.DESCENDING)])
-    n_entries = list_entries.count()
+    n_entries = db.entries.count_documents(q_filters)
 
     max_page = math.ceil(n_entries / n_limit) or 1
 
@@ -196,7 +196,7 @@ def user_details(request, username):
 
     db = Database.get_instance()
     list_entries = db.entries.find({'target_author': username}).sort('created_utc', pymongo.ASCENDING)
-    list_count = list_entries.count()
+    list_count = db.entries.count_documents({'target_author': username})
 
     if list_count == 0:
         messages.add_message(request, messages.ERROR, 'No entries found for that user')
