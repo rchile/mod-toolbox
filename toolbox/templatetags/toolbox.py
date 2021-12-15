@@ -16,7 +16,17 @@ def format_date(value):
 @register.filter
 def human_date(value):
     m = arrow.get(value)
-    return m.humanize().rstrip(' ago')
+    return m.humanize(only_distance=True)
+
+
+@register.filter
+def human_date_short(value):
+    result = human_date(value)
+    rs = result.split(' ')
+    if rs[0] in ['a', 'an']:
+        rs[0] = '1'
+
+    return rs[0] + rs[1][0]
 
 
 @register.filter

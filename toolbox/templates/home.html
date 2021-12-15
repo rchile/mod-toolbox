@@ -17,7 +17,7 @@
     <div class="card-deck mt-3">
         <div class="card bg-primary text-light">
             <a href="{% url 'entries' %}">
-                <div class="card-body"><h4>{{ last_24h }}</h4>Actions last 24H</div>
+                <div class="card-body"><h4>{{ last_24h_count }}</h4>Actions last 24H</div>
             </a>
         </div>
         <div class="card bg-info text-light">
@@ -36,11 +36,28 @@
             </a>
         </div>
         <div class="card bg-success text-light">
-            <div class="card-body"><h4>{{ approval_count }}</h4>Approved content</div>
+            <div class="card-body">
+                <h4>
+                    {{ approval_count }}
+                    <span style="font-size: 13px">
+                        {% include 'icons/chat-left-quote-10px.svg' %} {{ approval_comments_count }}&nbsp;
+                        {% include 'icons/layout-text-window-10px.svg' %} {{ approval_post_count }}
+                    </span>
+                </h4>
+                Approved content
+            </div>
         </div>
         <div class="card bg-danger text-light">
             <a href="{% url 'entries' %}?action=banuser">
-                <div class="card-body"><h4>{{ ban_count }}</h4>Banned users</div>
+                <div class="card-body">
+                    <h4>
+                        {{ ban_count }}
+                        {% if ban_perm_count > 0 %}
+                            <span style="font-size: 12px">({{ ban_perm_count }} perm)</span>
+                        {% endif %}
+                    </h4>
+                    Banned users
+                </div>
             </a>
         </div>
     </div>
@@ -91,18 +108,21 @@
         <div class="col-sm-6">
             <table class="table table-striped table-sm table-responsive">
             <thead>
-                <tr><th colspan="3" scope="colgroup" class="text-center">Last {{ last_bans_count }} bans</th></tr>
-                <tr><th scope="col">Target</th><th scope="col">Mod</th><th scope="col">Period</th></tr>
+                <tr><th colspan="4" scope="colgroup" class="text-center">Last {{ last_bans_count }} bans</th></tr>
+                <tr>
+                    <th scope="col">Target</th>
+                    <th scope="col">Mod</th>
+                    <th scope="col">Period</th>
+                    <th scope="col">{% include 'icons/clock.svg' %}</th>
+                </tr>
             </thead>
             <tbody>
                 {% for ban in last_bans %}
                     <tr>
                         <td><a href="{% url 'user_detail' ban.target_author %}">u/{{ ban.target_author }}</a></td>
                         <td>{{ ban.mod }}</td>
-                        <td>
-                            <a href="{% url 'entry' ban.id %}" title="More details">{{ ban.details }}</a>
-                            <abbr title="{{ ban.created_utc | format_date }}">({{ ban.created_utc | human_date }} ago)</abbr>
-                        </td>
+                        <td><a href="{% url 'entry' ban.id %}" title="More details">{{ ban.details }}</a></td>
+                        <td><abbr title="{{ ban.created_utc | format_date }}">{{ ban.created_utc | human_date_short }} ago</abbr></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -113,12 +133,20 @@
             <ul class="list-group list-group-flush">
                 {% for entry in last_removed %}
                 <li class="list-group-item">
-                    <div>
-                        <strong>{% if entry.action|slice:'-7:' == 'comment' %}Comment{% else %}Post{% endif %}</strong>
-                        from <a href="{% url 'user_detail' entry.target_author %}">u/{{ entry.target_author }}</a>
-                        <abbr title="{{ entry.created_utc | format_date }}">({{ entry.created_utc | human_date }} ago)</abbr>
-                        <a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">(view)</a>
-                        <a href="{% url 'entry' entry.id %}">(details)</a>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            {% if entry.action|slice:'-7:' == 'comment' %}
+                                <span title="Comment">{% include 'icons/chat-left-quote.svg' %}</span>
+                            {% else %}
+                                <span style="position: relative; top: -2px" title="Post">{% include 'icons/layout-text-window.svg' %}</span>
+                            {% endif %}
+                            <a href="{% url 'user_detail' entry.target_author %}" class="pl-2"><b>u/{{ entry.target_author }}</b></a>
+                        </div>
+                        <div>
+                            <abbr title="{{ entry.created_utc | format_date }}">({{ entry.created_utc | human_date_short }} ago)</abbr>
+                            <a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">{% include 'icons/eye.svg' %}</a>
+                            <a href="{% url 'entry' entry.id %}">{% include 'icons/info-circle.svg' %}</a>
+                        </div>
                     </div>
                     <div>
                     {% if entry.target_title %}

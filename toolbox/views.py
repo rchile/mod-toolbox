@@ -28,13 +28,13 @@ def home(request):
     current_seg = (datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()
 
     db = Database.get_instance()
-    total_count = db.entries.find().count()
-    last_hour = db.entries.find({'created_utc': {'$gte': current_seg - 3600}}).count()
-    last_24h = db.entries.find({'created_utc': {'$gte': current_seg - (3600*24)}})
-    last_bans = db.entries.find({'action': 'banuser'}).limit(30).sort('created_utc', pymongo.DESCENDING)
-    last_removed = db.entries.find(
-        {'action': {'$in': ['removecomment', 'spamcomment', 'removelink', 'spamlink']}}
-    ).limit(15).sort('created_utc', pymongo.DESCENDING)
+    total_count = db.entries.count_documents({})
+    last_hour = db.entries.count_documents({'created_utc': {'$gte': current_seg - 3600}})
+    last_24h = list(db.entries.find({'created_utc': {'$gte': current_seg - (3600*24)}}))
+    last_bans = list(db.entries.find({'action': 'banuser'}).limit(30).sort('created_utc', pymongo.DESCENDING))
+    last_removed = list(db.entries.find(
+        {'action': {'$in': ['removecomment', 'spamcomment', 'removelink', 'spamlink']}})
+        .limit(15).sort('created_utc', pymongo.DESCENDING))
 
     mod_count = {}
     action_count = {}
@@ -42,6 +42,7 @@ def home(request):
     comments_count = 0
     posts_count = 0
     automod_count = 0
+    ban_perm_count = 0
 
     for entry in last_24h:
         mod = entry['mod']
@@ -68,27 +69,36 @@ def home(request):
                 comments_count += 1
             if entry['action'] in ['removelink', 'spamlink']:
                 posts_count += 1
+            if entry['action'] == 'banuser' and entry['details'] == 'permanent':
+                ban_perm_count += 1
 
-    approval_count = action_count.get('approvelink', 0) + action_count.get('approvecomment', 0)
+    approval_post_count = action_count.get('approvelink', 0)
+    approval_comments_count = action_count.get('approvecomment', 0)
+    approval_count = approval_post_count + approval_comments_count
     mod_count = sort_numeric_dict(mod_count)
     action_count = sort_numeric_dict(action_count)
     target_count = OrderedDict(list(sort_numeric_dict(target_count).items())[:10])
 
+    ban_perm_count = 1
+
     return TemplateResponse(request, 'home.html', {
         'total': total_count,
         'last_hour': last_hour,
-        'last_24h': last_24h.count(),
+        'last_24h_count': len(last_24h),
         'mod_count': mod_count,
         'action_count': action_count,
         'target_count': target_count,
         'posts_count': posts_count,
         'approval_count': approval_count,
         'ban_count': action_count.get('banuser', 0),
+        'ban_perm_count': ban_perm_count,
         'comment_count': comments_count,
         'automod_count': automod_count,
         'last_bans': last_bans,
-        'last_bans_count': min(last_bans.count(), 15),
-        'last_removed': last_removed
+        'last_bans_count': len(last_bans),
+        'last_removed': last_removed,
+        'approval_comments_count': approval_comments_count,
+        'approval_post_count': approval_post_count
     })
 
 
