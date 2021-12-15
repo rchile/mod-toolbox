@@ -79,8 +79,6 @@ def home(request):
     action_count = sort_numeric_dict(action_count)
     target_count = OrderedDict(list(sort_numeric_dict(target_count).items())[:10])
 
-    ban_perm_count = 1
-
     return TemplateResponse(request, 'home.html', {
         'total': total_count,
         'last_hour': last_hour,
