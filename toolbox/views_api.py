@@ -11,12 +11,7 @@ def modlog(request):
         return message_response('Invalid "after" mod action ID', status=400)
 
     db = Database.get_instance()
-    after_entry = None
-    if after_id:
-        try:
-            after_entry = db.get_entry(after_id).next()
-        except StopIteration:
-            return message_response('"after" entry not found')
+    after_entry = db.get_entry(after_id) if after_id else None
 
     q_filter = {'created_utc': {'$lt': after_entry['created_utc']}} if after_entry else None
     results = db.entries.find(q_filter, projection={'_id': 0}).limit(50).sort('created_utc', DESCENDING)
