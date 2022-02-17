@@ -1,8 +1,8 @@
-Django==3.2.10
-django-cors-headers==3.10.1
+Django==4.0.2
+django-cors-headers==3.11.0
 praw==7.5.0
 pymongo==4.0.1
-requests==2.26.0
+requests==2.27.1
 prawcore==2.3.0
-arrow==1.2.1
+arrow==1.2.2
 markdown~=3.3.4
