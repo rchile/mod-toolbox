@@ -1,6 +1,6 @@
 from django.urls import path
 
-from toolbox import views, views_api, views_session
+from toolbox import views, views_session
 
 urlpatterns = [
     path('', views_session.index, name='index'),
@@ -14,7 +14,5 @@ urlpatterns = [
     path('modmail/<slug:convo_id>', views.modmail, name='modmail_details'),
     path('session/login', views_session.login, name='login'),
     path('session/logout', views_session.logout, name='logout'),
-    path('session/return', views_session.login_return, name='login_return'),
-
-    path('api/modlog/', views_api.modlog)
+    path('session/return', views_session.login_return, name='login_return')
 ]
