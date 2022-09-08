@@ -137,6 +137,9 @@ REDDIT_DEFAULT_SUB = os.getenv('REDDIT_DEFAULT_SUB', 'chile')
 # MongoDB URI
 MODLOG_MONGODB_URI = os.getenv('MODLOG_MONGODB_URI', 'mongodb://127.0.0.1:27015/entries')
 
+# Discord Webhook for modlog
+DISCORD_MODLOG_WEBHOOK = os.getenv('DISCORD_MODLOG_WEBHOOK')
+
 try:
     from local_settings import *
 except ImportError:

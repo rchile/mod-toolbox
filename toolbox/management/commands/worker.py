@@ -9,6 +9,8 @@ from praw.models import ModAction
 from system.api import api
 from system.database import Database
 
+from toolbox import discord_ws
+
 log = logging.getLogger('worker')
 
 
@@ -95,6 +97,10 @@ class Command(BaseCommand):
             log.info('Current batch ID: {}, inserting {} entries (suming up {}).'.format(
                 last_id, len(api_entries), total_entries))
             self.db.insert_entries(api_entries)
+
+            for entry in api_entries:
+                discord_ws.send(entry)
+    
         return total_entries
 
     def full_sync(self):
