@@ -6,3 +6,5 @@ requests==2.27.1
 prawcore==2.3.0
 arrow==1.2.2
 markdown~=3.3.4
+python-dotenv==0.21.0
+dj-database-url==1.0.0
