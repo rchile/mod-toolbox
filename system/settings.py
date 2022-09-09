@@ -1,4 +1,5 @@
 import os
+import re
 
 from dotenv import load_dotenv
 import dj_database_url
@@ -52,7 +53,7 @@ TEMPLATES = [
 
 # Logging
 # https://docs.djangoproject.com/en/3.0/topics/logging/
-default_log_format = '%(asctime)s | %(name)-14s | %(levelname)-8s | %(message)s'
+default_log_format = '%(asctime)s | [%(levelname)s] %(name)s | %(message)s'
 default_log_notime = default_log_format[14:]
 log_time = os.getenv('LOG_FORMAT_TIME', '1') == '1'
 log_format = os.getenv('LOG_FORMAT', default_log_format if log_time else default_log_notime)
@@ -84,6 +85,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },
+        'worker': {
+            'handlers': ['console'],
+            'level': os.getenv('WORKER_LOG_LEVEL', 'INFO'),
+        }
     },
 }
 
@@ -103,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'America/Santiago'
+TIME_ZONE = os.getenv('TIME_ZONE', 'America/Santiago')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True

@@ -53,8 +53,6 @@ class Command(BaseCommand):
         except KeyboardInterrupt:
             log.info('Keyboard interrupt received!')
 
-        log.info('Goodbye!')
-
     def worker(self):
         last = self.db.entries.find_one(sort=[("created_utc", pymongo.DESCENDING)])
 
@@ -97,9 +95,7 @@ class Command(BaseCommand):
             log.info('Current batch ID: {}, inserting {} entries (suming up {}).'.format(
                 last_id, len(api_entries), total_entries))
             self.db.insert_entries(api_entries)
-
-            for entry in api_entries:
-                discord_ws.send(entry)
+            discord_ws.send(api_entries)
     
         return total_entries
 

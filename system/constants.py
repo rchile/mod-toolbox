@@ -58,6 +58,21 @@ MOD_ACTIONS = {
     'wikipermlevel': 'Permission level of wiki changed',
     'wikirevise': 'Wiki revised',
     'wikiunbanned': 'Unbanned from wiki',
+    'setcontestmode': 'Contest mode set',
+    'unsetcontestmode': 'Contest mode unset',
+    'createrule': 'Rule created',
+    'editerule': 'Rule edited',
+    'deleterule': 'Rule deleted',
+    'create_scheduled_post': 'Scheduled post created',
+    'edit_scheduled_post': 'Scheduled post edited',
+    'delete_scheduled_post': 'Scheduled post deleted',
+    'submit_scheduled_post': 'Scheduled post submitted',
+    'addnote': 'User note added',
+    'deletenote': 'User note deleted',
+    'addremovalreason': 'Removal reason added',
+    'createremovalreason': 'Removal reason created',
+    'updateremovalreason': 'Removal reason updated',
+    'deleteremovalreason': 'Removal reason deleted'
 }
 
 IMPORTANT_ACTIONS = [
@@ -65,3 +80,48 @@ IMPORTANT_ACTIONS = [
     'muteuser', 'removecomment', 'removelink', 'showcomment', 'spamcomment', 'spamlink', 'spoiler', 'unbanuser',
     'unignorereports', 'unlock', 'unmuteuser', 'unspoiler', 'wikibanned', 'wikiunbanned'
 ]
+
+MODACTION_WH = {
+    'approvecomment': 'Comentario aprobado',
+    'approvelink': 'Post aprobado',
+    'banuser': 'Usuario baneado',
+    'editflair': 'Flair editado',
+    'ignorereports': 'Reportes ignorados',
+    'lock': 'Post/comentario bloqueado',
+    'marknsfw': 'Post marcado como NSFW',
+    'markoriginalcontent': 'Post marcado como OC',
+    'muteuser': 'Usuario muteado del modmail',
+    'removecomment': 'Comentario retirado',
+    'removelink': 'Post retirado',
+    'showcomment': 'Comentario mostrado',
+    'spamcomment': 'Comentario marcado como spam',
+    'spamlink': 'Post marcado como spam',
+    'spoiler': 'Post marcado como spoiler',
+    'unbanuser': 'Usuario desbaneado',
+    'unignorereports': 'Reportes restaurados',
+    'unlock': 'Post/comentario desbloqueado',
+    'unmuteuser': 'Usuario desmuteado del modmail',
+    'unspoiler': 'Post desmarcado como spoiler',
+    'sticky': 'Post/comentario fijado',
+    'unsticky': 'Post/comentario desfijado',
+    'setcontestmode': 'Modo concurso activado',
+    'unsetcontestmode': 'Modo concurso desactivado',
+    'createrule': 'Regla creada',
+    'editerule': 'Regla editada',
+    'deleterule': 'Regla eliminada',
+    'create_scheduled_post': 'Post programado creado',
+    'edit_scheduled_post': 'Post programado editado',
+    'delete_scheduled_post': 'Post programado borrado',
+    'submit_scheduled_post': 'Post programado enviado',
+    'addnote': 'Nota de usuario agregada',
+    'deletenote': 'Nota de usuario eliminada',
+    'createremovalreason': 'Razón de eliminado creada',
+    'updateremovalreason': 'Razón de eliminado actualizada',
+    'deleteremovalreason': 'Razón de eliminado borrada',
+}
+
+USELESS_DETAILS = {
+    'confirm_ham': '',
+    'remove': '',
+    'unspam': 'Estaba filtrado por el AutoMod'
+}
