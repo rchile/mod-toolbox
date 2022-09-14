@@ -2,6 +2,7 @@ import json
 import time
 import logging
 
+from django.conf import settings
 from django.core.management import BaseCommand
 
 from system.api import raw_oauthapi
@@ -21,22 +22,36 @@ class Command(BaseCommand):
             self.partial_run()
             return
 
-        daemon = not options['once']
-
         try:
             while 1:
                 self.worker()
-                if not daemon:
+                if options['once']:
                     break
                 time.sleep(5)
         except KeyboardInterrupt:
             log.info('Keyboard interrupt received!')
     
     def partial_run(self):
-        url = 'api/mod/conversations?limit=10&entity=chile'
+        sub = settings.REDDIT_DEFAULT_SUB
+        url = f'api/mod/conversations?limit=10&sort=recent&entity={sub}'
 
-        res = raw_oauthapi(url)
-        self.stdout.write(json.dumps(res))
+        results = raw_oauthapi(url)
+        msgs = []
+
+        for item in results['conversations'].values():
+            message = results['messages'].get(item['objIds'][0]['id'])
+            if not message or not message['author']['isOp']:
+                continue
+
+            msgs.append({
+                'subject': item['subject'],
+                'message': message['bodyMarkdown'],
+                'author': message['author'],
+                'others': [i['name'] for i in item['authors'] if i['name'] != message['author']['name']],
+                'date': item['lastUpdated']
+            })
+
+        self.stdout.write(json.dumps(msgs))
 
     def worker(self, *args, **options):
         last_id = None
