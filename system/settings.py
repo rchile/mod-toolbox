@@ -138,6 +138,9 @@ REDDIT_APP_REFRESH = os.getenv('REDDIT_APP_REFRESH', '')
 REDDIT_APP_REDIRECT = os.getenv('REDDIT_APP_REDIRECT', 'http://127.0.0.1:8000/session/return')
 REDDIT_APP_UA = os.getenv('REDDIT_APP_UA', 'rchile-mod-toolbox/0.0.0')
 REDDIT_DEFAULT_SUB = os.getenv('REDDIT_DEFAULT_SUB', 'chile')
+# Reddit refresh code generator
+REDDIT_REFRESH_APP_ID = os.getenv('REDDIT_REFRESH_APP_ID', REDDIT_APP_ID)
+REDDIT_REFRESH_APP_SECRET = os.getenv('REDDIT_REFRESH_APP_SECRET', REDDIT_APP_SECRET)
 
 # MongoDB URI
 MODLOG_MONGODB_URI = os.getenv('MODLOG_MONGODB_URI', 'mongodb://127.0.0.1:27015/entries')
