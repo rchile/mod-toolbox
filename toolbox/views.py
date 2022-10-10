@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 import arrow
 import pymongo
 from django.contrib import messages
-from django.http import HttpResponseBadRequest, Http404
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -171,6 +171,20 @@ def entry_details(request, entry_id):
     if the_entry is None:
         raise Http404('Entry not found')
 
+    if request.method == 'POST' and request.POST.get('action', '') == 'toggle_hide':
+        is_hidden = bool(the_entry.get('hidden', False))
+        reason = request.POST.get('reason', '(no reason)').strip()
+        if is_hidden:
+            db.set_entry_hidden(entry_id, False)
+            the_entry['hidden'] = False
+            messages.add_message(request, messages.SUCCESS, 'Entry details restored')
+        else:
+            db.set_entry_hidden(entry_id, True, reason)
+            the_entry['hidden'] = True
+            the_entry['hidden_reason'] = reason
+            messages.add_message(request, messages.SUCCESS, 'Entry details hidden')
+        return HttpResponseRedirect(request.path_info)
+
     return TemplateResponse(request, 'entry_details.html', {'entry': the_entry})
 
 
@@ -192,8 +206,7 @@ def user_details(request, username):
     if action_filter and action_filter not in MOD_ACTIONS:
         action_filter = None
 
-    userdata = rawapi(f'user/{username}/about')['data']
-
+    userdata = rawapi(f'user/{username}/about').get('data', None)
     db = Database.get_instance()
     list_entries = db.entries.find({'target_author': username}).sort('created_utc', pymongo.ASCENDING)
     list_count = db.entries.count_documents({'target_author': username})

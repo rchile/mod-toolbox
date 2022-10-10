@@ -2,11 +2,24 @@
 {% load toolbox %}
 {% block pagename %}User{% endblock %}
 {% block content %}
+    <form action="{% url 'user_form' %}" class="row row-cols-lg-auto justify-content-center align-items-center mb-3 g-1">
+        <div class="col-12">
+            <div class="input-group">
+                <label class="input-group-text" id="fi-label-user" for="fi-user">User</label>
+                <input type="text" class="form-control" id="fi-user" name="username" value="{{ username }}"
+                    placeholder="ssources" aria-label="Username" aria-describedby="fi-label-user">
+            </div>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Go</button>
+        </div>
+    </form>
     {% if username %}
         <div class="row mb-4">
             <div class="col-sm-5 clearfix">
-                <img src="{{ userdata.icon_img | safe }}" alt="u/{{ username }}" class="user-avatar">
+                {% if userdata %} <img src="{{ userdata.icon_img | safe }}" alt="u/{{ username }}" class="user-avatar">{% endif %}
                 <h4>u/{{ username }}</h4>
+                {% if not userdata %}<div class="text-danger">User not found</div>{%endif%}
                 <div class="small"><a href="https://reddit.com/user/{{ username }}" target="_blank">(view profile)</a></div>
                 {% if userdata %}
                     <div class="small">Redditor for {{ userdata.created | human_date }}</div>
@@ -27,38 +40,30 @@
                 Posts removed: {{ removed_posts }}
             </div>
         </div>
-    {% else %}
-    <form action="{% url 'user_form' %}" class="text-center">
-        <label>User: <input type="text" name="username" value="{{ username }}"></label>
-        <input type="submit" value="Go">
-    </form>
-    {% endif %}
 
         <div class="d-flex mb-2 justify-content-between align-items-end">
+        {% if entries %}
             <div class="font-weight-bold">
-            {% if entries %}
                 Last {{ entries_list_count }} entries
                 (total: {{ entries_count }}{% if action_filter %}, filtered by the {{ action_filter }} action{% endif %})
-            {% else %}
-                No entries found
-            {% endif %}
             </div>
             <div>
-                <select name="action" class="form-control form-control-sm mr-sm-2" id="form-filter-action">
+                <select name="action" class="form-control form-control-sm form-select me-sm-2" id="form-filter-action">
                     <option value="">-- no action filter --</option>
                     {% for entry_value, entry_name in mod_actions.items %}
                         <option value="{{ entry_value }}"{% if action_filter == entry_value %} selected{% endif %}>{{ entry_value }}</option>
                     {% endfor %}
                 </select>
             </div>
+        {% else %}
+            <div class="fw-bold">No entries found</div>
+        {% endif %}
         </div>
         {% if entries %}
             {% include 'base/entries_list.html' %}
         {% endif %}
-    {% if userdata %}
-        <hr>
-        <pre class="raw-content">{{ userdata }}</pre>
     {% endif %}
+
     <script>
     const initialFilter = '{{ action_filter }}';
     const selectFilter = document.querySelector('select[name="action"]');

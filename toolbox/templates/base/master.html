@@ -5,39 +5,14 @@
     <meta charset="UTF-8">
     <title>{% block pagename %}Home{% endblock %} | Toolbox</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.1/css/bootstrap.min.css"
-          integrity="sha512-T584yQ/tdRR5QwOpfvDfVQUidzfgc2339Lc8uBDtcp/wYu80d7jwBgAxbyMh0a9YM9F8N3tdErpFI8iaGx6x5g=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.2/css/bootstrap.min.css"
+        integrity="sha512-CpIKUSyh9QX2+zSdfGP+eWLx23C8Dj9/XmHjZY2uDtfkdLGo0uY12jgcnkX9vXOgYajEKb/jiw67EYm+kBf+6g==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{% static 'style.css' %}">
     {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand" href="{% url 'home' %}">Toolbox</a>
-
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'home' %}">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'entries' %}">Entries</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'user_form' %}">Users</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'modmail' %}">Modmail</a>
-            </li>
-        </ul>
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <span class="navbar-text">Hello, u/{{ reddit_user }}</span>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-            </li>
-        </ul>
-    </nav>
+    {% include "base/navbar.html" %}
 
     <div class="container mt-3">
         {% for message in messages %}
@@ -50,5 +25,6 @@
         <hr>
         <div class="text-center text-muted mb-3">Proudly made with ❤️ and Django by u/makzk for the r/chile mod team</div>
     </div>
+    {% block footer %}{% endblock %}
 </body>
 </html>

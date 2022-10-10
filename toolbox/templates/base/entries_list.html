@@ -29,7 +29,7 @@
                     <div>"{{ entry.description }}"</div>
                 {% endif %}
                 {% if entry.target_body %}
-                    <div class="target-body">{{ entry.target_body | markdown | truncatewords:50 | safe }}</div>
+                    <div class="target-body">{{ entry.target_body | truncatewords:50 | markdown | safe }}</div>
                 {% endif %}
                 {% if entry.target_permalink %}
                     (<a href="https://reddit.com{{ entry.target_permalink }}" target="_blank">permalink</a>)

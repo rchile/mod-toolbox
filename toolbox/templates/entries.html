@@ -1,19 +1,35 @@
 {% extends 'base/master.html' %}
 {% block pagename %}Entries{% endblock %}
 {% block content %}
-    <form action="{% url 'entries' %}" class="form-inline">
-        <label for="form-filter-user" class="mr-sm-2">User:</label>
-        <input type="text" class="form-control mr-sm-2" id="form-filter-user" name="user" value="{{ filter_user }}">
-        <label for="form-filter-mod" class="mr-sm-2">Mod:</label>
-        <input type="text" class="form-control mr-sm-2" id="form-filter-mod" name="mod" value="{{ filter_mod }}">
-        <label for="form-filter-action" class="mr-sm-2">Action:</label>
-        <select name="action" class="form-control mr-sm-2" id="form-filter-action">
-            <option value="">-------------</option>
-            {% for entry_value, entry_name in mod_actions.items %}
-                <option value="{{ entry_value }}"{% if filter_action == entry_value %} selected{% endif %}>{{ entry_value }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" class="btn btn-primary" value="Filter">
+    <form action="{% url 'entries' %}" class="row row-cols-lg-auto justify-content-center align-items-center mb-3">
+        <div class="col-12">
+            <div class="input-group">
+                <label class="input-group-text" id="fi-label-user" for="fi-user">User</label>
+                <input type="text" class="form-control" id="fi-user" name="user" value="{{ filter_user }}"
+                    placeholder="ssources" aria-label="Username" aria-describedby="fi-label-user">
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-group">
+                <label class="input-group-text" id="fi-label-mod" for="fi-mod">Mod</label>
+                <input type="text" class="form-control" id="fi-mod" name="mod" value="{{ filter_mod }}"
+                    placeholder="makzk" aria-label="Username" aria-describedby="fi-label-mod">
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-group">
+                <label class="input-group-text" id="fi-label-action" for="fi-action">Action</label>
+                <select name="action" class="form-control form-select mr-sm-2" id="fi-label-action" aria-label="Action" aria-describedby="fi-label-action">
+                    <option value="">-------------</option>
+                    {% for entry_value, entry_name in mod_actions.items %}
+                        <option value="{{ entry_value }}"{% if filter_action == entry_value %} selected{% endif %}>{{ entry_value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
     </form>
 
     {% if entries_total > 0 %}
@@ -21,6 +37,8 @@
         {% include 'base/entries_list.html' %}
         <div>{% include 'base/pagination.html' %}</div>
     {% else %}
-        <p>No se encontraron entradas.</p>
+        <div class="alert alert-danger" role="alert">
+            No entries found.
+        </div>
     {% endif %}
 {% endblock %}

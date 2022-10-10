@@ -53,11 +53,12 @@ class Database:
 
         return self.entries.update_one({'id': entry_id}, {'$set': {'notes': note}})
 
-    def set_entry_hidden(self, entry_id, is_hidden, reason):
+    def set_entry_hidden(self, entry_id, is_hidden, reason=''):
         if not self.get_entry(entry_id):
             return False
 
-        return self.entries.update_one({'id': entry_id}, {'$set': {'hidden': is_hidden, 'hidden_reason': reason}})
+        params = {'$set': {'hidden': is_hidden, 'hidden_reason': reason}} if is_hidden else {'$unset': {'hidden': 1}}
+        return self.entries.update_one({'id': entry_id}, params)
 
     def insert_entries(self, entries):
         """

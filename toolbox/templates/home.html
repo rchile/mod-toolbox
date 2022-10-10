@@ -14,51 +14,63 @@
 {% block content %}
     <h3>Dashboard <small class="text-muted">Last 24 hours stats</small></h3>
 
-    <div class="card-deck mt-3">
-        <div class="card bg-primary text-light">
-            <a href="{% url 'entries' %}">
-                <div class="card-body"><h4>{{ last_24h_count }}</h4>Actions last 24H</div>
-            </a>
-        </div>
-        <div class="card bg-info text-light">
-            <a href="{% url 'entries' %}?mod=AutoModerator">
-                <div class="card-body"><h4>{{ automod_count }}</h4>Automatic actions</div>
-            </a>
-        </div>
-        <div class="card bg-warning">
-            <a href="{% url 'entries' %}?action=removecomment">
-                <div class="card-body"><h4>{{ comment_count }}</h4>Removed comments</div>
-            </a>
-        </div>
-        <div class="card bg-warning">
-            <a href="{% url 'entries' %}?action=removelink">
-                <div class="card-body"><h4>{{ posts_count }}</h4>Removed posts</div>
-            </a>
-        </div>
-        <div class="card bg-success text-light">
-            <div class="card-body">
-                <h4>
-                    {{ approval_count }}
-                    <span style="font-size: 13px">
-                        {% include 'icons/chat-left-quote-10px.svg' %} {{ approval_comments_count }}&nbsp;
-                        {% include 'icons/layout-text-window-10px.svg' %} {{ approval_post_count }}
-                    </span>
-                </h4>
-                Approved content
+    <div class="row row-cols-1 row-cols-md-6 g-4">
+        <div class="col">
+            <div class="card bg-primary text-light">
+                <a href="{% url 'entries' %}" class="text-decoration-none">
+                    <div class="card-body"><h4>{{ last_24h_count }}</h4>Actions last 24H</div>
+                </a>
             </div>
         </div>
-        <div class="card bg-danger text-light">
-            <a href="{% url 'entries' %}?action=banuser">
+        <div class="col">
+            <div class="card bg-info text-light">
+                <a href="{% url 'entries' %}?mod=AutoModerator" class="text-decoration-none">
+                    <div class="card-body"><h4>{{ automod_count }}</h4>Automatic actions</div>
+                </a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-warning">
+                <a href="{% url 'entries' %}?action=removecomment" class="text-decoration-none">
+                    <div class="card-body"><h4>{{ comment_count }}</h4>Removed comments</div>
+                </a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-warning">
+                <a href="{% url 'entries' %}?action=removelink" class="text-decoration-none">
+                    <div class="card-body"><h4>{{ posts_count }}</h4>Removed posts</div>
+                </a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-success text-light">
                 <div class="card-body">
                     <h4>
-                        {{ ban_count }}
-                        {% if ban_perm_count > 0 %}
-                            <span style="font-size: 12px">({{ ban_perm_count }} perm)</span>
-                        {% endif %}
+                        {{ approval_count }}
+                        <span style="font-size: 13px">
+                            {% include 'icons/chat-left-quote-10px.svg' %} {{ approval_comments_count }}&nbsp;
+                            {% include 'icons/layout-text-window-10px.svg' %} {{ approval_post_count }}
+                        </span>
                     </h4>
-                    Banned users
+                    Approved content
                 </div>
-            </a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-danger text-light">
+                <a href="{% url 'entries' %}?action=banuser" class="text-decoration-none">
+                    <div class="card-body">
+                        <h4>
+                            {{ ban_count }}
+                            {% if ban_perm_count > 0 %}
+                                <span style="font-size: 12px">({{ ban_perm_count }} perm)</span>
+                            {% endif %}
+                        </h4>
+                        Banned users
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 

@@ -2,7 +2,24 @@
 {% load toolbox %}
 {% block pagename %}Entry details{% endblock %}
 {% block content %}
-    <h4>Entry details: {{ entry.id }}</h4>
+    <div class="d-flex justify-content-between">
+        <div>
+            <h4>Entry details <span class="ms-2 fs-6 text-muted">{{ entry.action }} by {{entry.mod}}</span></h4>
+            <a href="{% url 'entry' entry.id %}">{{ entry.id }}</a>
+            {% if entry.hidden %}
+            <p><b>Entry hidden!</b> Reason: <span class="fst-italic">{{ entry.hidden_reason|default:'(no reason)' }}</span></p>
+            {% endif %}
+        </div>
+
+        <form method="post" name="toggleHide">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="toggle_hide" />
+            <input type="hidden" name="reason" value="" />
+            <button type="submit" class="btn btn-primary">
+                {% if entry.hidden %}Unhide{% else %}Hide{% endif %} details
+            </button>
+        </form>
+    </div>
     <div class="table-responsive mt-4">
     <table class="table table-sm table-striped">
         <tr><th>Moderator</th><td>{{ entry.mod }}</td></tr>
@@ -36,4 +53,27 @@
         <div class="font-weight-bold mb-1">Entry content</div>
         <div class="target-body">{{ entry.target_body | markdown | safe }}</div>
     {% endif %}
+{% endblock %}
+
+{% block footer %}
+<script>
+    const isHidden = {% if entry.hidden %}true{% else %}false{% endif %}
+    const form = document.toggleHide
+
+    form.addEventListener('submit', evt => {
+        evt.preventDefault()
+        if (isHidden) {
+            if (confirm('Do you really want to unhide the details for this action?')) {
+                form.submit()
+            }
+        } else {
+            let reason = prompt('Please enter the reason for hiding the details for this action (e.g. privacy reasons).')
+            if (reason !== null) {
+                reason = (reason || '(no reason)').trim()
+                form.reason.value = reason
+                form.submit()
+            }
+        }
+    })
+</script>
 {% endblock %}
