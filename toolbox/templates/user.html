@@ -2,16 +2,14 @@
 {% load toolbox %}
 {% block pagename %}User{% endblock %}
 {% block content %}
-    <form action="{% url 'user_form' %}" class="row row-cols-lg-auto justify-content-center align-items-center mb-3 g-1">
-        <div class="col-12">
+    <form action="{% url 'user_form' %}" class="row row-cols-md-auto justify-content-center align-items-center mb-3 g-1">
+        <div class="col">
             <div class="input-group">
                 <label class="input-group-text" id="fi-label-user" for="fi-user">User</label>
                 <input type="text" class="form-control" id="fi-user" name="username" value="{{ username }}"
                     placeholder="ssources" aria-label="Username" aria-describedby="fi-label-user">
+                <button type="submit" class="btn btn-primary">Go</button>
             </div>
-        </div>
-        <div class="col-12">
-            <button type="submit" class="btn btn-primary">Go</button>
         </div>
     </form>
     {% if username %}

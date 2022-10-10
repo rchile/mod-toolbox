@@ -4,17 +4,17 @@
 {% block head %}
     <style>
     .card-body { padding: 12px; font-size: 14px }
-    .card { text-shadow: 1px 1px 1px #666 }
+    .card { text-shadow: 1px 1px 1px rgba(0, 0, 0, .3) }
     .card.text-light { text-shadow: 1px 1px 2px #555 }
-    .card a { color: #000 }
-    .card a:hover { text-decoration: none }
+    .card a { color: #222 }
     .text-light a { color: #fff }
+    #stats-24h { word-break: break-word }
     </style>
 {% endblock %}
 {% block content %}
     <h3>Dashboard <small class="text-muted">Last 24 hours stats</small></h3>
 
-    <div class="row row-cols-1 row-cols-md-6 g-4">
+    <div class="row row-cols-2 row-cols-md-6 pt-2 g-3">
         <div class="col">
             <div class="card bg-primary text-light">
                 <a href="{% url 'entries' %}" class="text-decoration-none">
@@ -74,46 +74,46 @@
         </div>
     </div>
 
-    <div class="row mt-3">
-    <div class="col-md-4">
-        <table class="table table-striped table-sm">
-        <thead>
-            <tr><th colspan="2" scope="colgroup">Mod action count last 24H</th></tr>
-            <tr><th scope="col">Moderator</th><th scope="col">Action count</th></tr>
-        </thead>
-        <tbody>
-            {% for mod, count in mod_count.items %}
-                <tr><td><a href="{% url 'entries' %}?mod={{ mod }}">{{ mod }}</a></td><td>{{ count }}</td></tr>
-            {% endfor %}
-        </tbody>
-        </table>
-    </div>
-    <div class="col-md-4">
-        <table class="table table-striped table-sm">
-        <thead>
-            <tr><th colspan="2" scope="colgroup">Action count last 24H</th></tr>
-            <tr><th scope="col">Action type</th><th scope="col">Action count</th></tr>
-        </thead>
-        <tbody>
-            {% for action, count in action_count.items %}
-                <tr><td><a href="{% url 'entries' %}?action={{ action }}">{{ action }}</a></td><td>{{ count }}</td></tr>
-            {% endfor %}
-        </tbody>
-        </table>
-    </div>
-    <div class="col-md-4">
-        <table class="table table-striped table-sm">
-        <thead>
-            <tr><th colspan="2" scope="colgroup">Most targeted users last 24H</th></tr>
-            <tr><th scope="col">Action type</th><th scope="col">Action count</th></tr>
-        </thead>
-        <tbody>
-            {% for target, count in target_count.items %}
-                <tr><td><a href="{% url 'user_detail' target %}">{{ target }}</a></td><td>{{ count }}</td></tr>
-            {% endfor %}
-        </tbody>
-        </table>
-    </div>
+    <div id="stats-24h" class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+        <div class="col">
+            <table class="table table-striped table-sm">
+            <thead>
+                <tr><th colspan="2" scope="colgroup">Mod action count last 24H</th></tr>
+                <tr><th scope="col">Moderator</th><th scope="col">Action count</th></tr>
+            </thead>
+            <tbody>
+                {% for mod, count in mod_count.items %}
+                    <tr><td><a href="{% url 'entries' %}?mod={{ mod }}">{{ mod }}</a></td><td>{{ count }}</td></tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <table class="table table-striped table-sm">
+            <thead>
+                <tr><th colspan="2" scope="colgroup">Action count last 24H</th></tr>
+                <tr><th scope="col">Action type</th><th scope="col">Action count</th></tr>
+            </thead>
+            <tbody>
+                {% for action, count in action_count.items %}
+                    <tr><td><a href="{% url 'entries' %}?action={{ action }}">{{ action }}</a></td><td>{{ count }}</td></tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <table class="table table-striped table-sm">
+            <thead>
+                <tr><th colspan="2" scope="colgroup">Most targeted users last 24H</th></tr>
+                <tr><th scope="col">Action type</th><th scope="col">Action count</th></tr>
+            </thead>
+            <tbody>
+                {% for target, count in target_count.items %}
+                    <tr><td><a href="{% url 'user_detail' target %}">{{ target }}</a></td><td>{{ count }}</td></tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="row mt-3">
